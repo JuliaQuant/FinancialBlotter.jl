@@ -1,10 +1,13 @@
 function fetch_asset(s::String, source::String)
   if source == "yahoo"
-  #code here
+    read_yahoo(s)
   else if source == "fred"
-  #code here
+    print_with_color(:green, "code not written yet for the FRED site") 
+    println("") 
   else
   error("acceptable sources are yahoo or fred")
+  end
+  end
 end
 
 function read_asset(filename::String)

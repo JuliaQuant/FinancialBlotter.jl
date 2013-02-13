@@ -1,13 +1,30 @@
-using DataFrames, Calendar, UTF16 
+#using Stats, DataFrames, Calendar, UTF16, TimeSeries 
 
 module TradeInstrument
 
-using DataFrames, Calendar, UTF16 
+using Stats, DataFrames, Calendar, UTF16, TimeSeries
 
 abstract AbstractAsset <: Associative{String, Any}
 
-export reader,
-## testsuite macro
+export fetch_asset,
+       read_asset,
+# future month abbreviations
+       F,
+       G,
+       H,
+       J,
+       K,
+       M,
+       N,
+       Q,
+       U,
+       V,
+       X,
+       Z,
+# aliases
+       yahoo,
+       fred,
+# testsuite macro
        @tradeinstrument
 
 include("reader.jl")

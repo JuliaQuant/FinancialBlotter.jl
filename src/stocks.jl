@@ -1,4 +1,4 @@
-abstractStock <: AbstractAsset
+abstract AbstractStock <: AbstractAsset
 
 type Stock <: AbstractStock
   id::String
