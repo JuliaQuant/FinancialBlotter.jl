@@ -87,8 +87,7 @@ fdata = readlines(`curl -s "http://research.stlouisfed.org/fred2/series/$stock/d
       df[i,2] = NA
      end
    end  
-
-  flipud(df)
+  df
 end
 
 ############### DEFAULT ###########################
