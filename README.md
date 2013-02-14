@@ -23,6 +23,7 @@ julia> head(GLD, 3)
 
 As a `Stock` object: 
 
+````julia
 julia> GLD = yahoo!("GLD");
 
 julia> GLD.prices[1:3,:]
