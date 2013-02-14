@@ -6,7 +6,14 @@ using Stats, DataFrames, Calendar, UTF16, TimeSeries
 
 export Stock,
        fetch_asset,
+       fetch_asset!,
        read_asset,
+       read_asset!,
+# aliases
+       yahoo,
+       yahoo!,
+       fred,
+       fred!,
 # future month abbreviations
        F,
        G,
@@ -20,9 +27,6 @@ export Stock,
        V,
        X,
        Z,
-# aliases
-       yahoo,
-       fred,
 # testsuite macro
        @tradinginstrument
 
@@ -32,6 +36,6 @@ include("futures.jl")
 include("options.jl")
 include("currencies.jl")
 include("notes.jl")
-include("testtradnginstrument.jl")
+include("testtradinginstrument.jl")
 
 end 

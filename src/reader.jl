@@ -45,6 +45,10 @@ function read_yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, 
   flipud(df)
 end
 
+function read_fred(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::Int, period::String)
+  # code here
+end
+
 ############### DEFAULT ###########################
 
 ## last three years, daily data
@@ -78,3 +82,30 @@ function read_asset(filename::String)
   flipud(df)
 end
 
+##########################################################
+####
+#### import time series and return Stock object with bang
+####
+##########################################################
+
+function fetch_asset!(s::String, source::String)
+  if source == "yahoo"
+    typed_stock = read_yahoo(s)
+  else if source == "fred"
+    print_with_color(:green, "code not written yet for the FRED site") 
+    println("") 
+  else
+  error("acceptable sources are yahoo or fred")
+  end
+  end
+  # need control flow, this case only applies to Yahoo format
+  res = Stock(s, 
+              IndexedVector(typed_stock["Date"]), 
+              typed_stock[["Open", "High", "Low", "Close", "Adj"]], 
+              typed_stock["Vol"], 
+              .01)
+end
+
+
+yahoo!(s::String) = fetch_asset!(s::String, "yahoo") 
+fred!(s::String)  = fetch_asset!(s::String, "fred") 
