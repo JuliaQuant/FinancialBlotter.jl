@@ -13,6 +13,9 @@ As a `DataFrame` object:
 ````julia
 julia> GLD = yahoo("GLD");
 
+julia> typeof(GLD)
+DataFrame
+
 julia> head(GLD, 3)
 3x7 DataFrame:
               Date   Open   High    Low  Close      Vol    Adj
@@ -25,6 +28,9 @@ As a `Stock` object:
 
 ````julia
 julia> GLD = yahoo!("GLD");
+
+julia> typeof(GLD)
+Stock
 
 julia> GLD.prices[1:3,:]
 3x5 DataFrame:
