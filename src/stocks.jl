@@ -5,5 +5,5 @@ type Stock <: AbstractStock
   idx::IndexedVector{CalendarTime}
   prices::DataFrame
   volume::DataArray{Int, 1}
-  tick_size::Float64
+  tick::Float64
 end
