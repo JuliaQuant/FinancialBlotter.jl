@@ -45,7 +45,37 @@ function read_yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, 
   flipud(df)
 end
 
-function read_fred(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::Int, period::String)
+function read_fred(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::Int)
+
+  startdate = string(fy, "-", fm, "-", fd)
+  enddate   = string(ty, "-", tm, "-", td)
+
+  apikey = "47535fa5db345b924d890ec189a33036"
+  
+  fdata = readlines(`curl -s "http://api.stlouisfed.org/fred/series/observations?series_id=$stock&realtime_start=$startdate&realtime_end=$enddate&api_key=$apikey"`)
+  colstring = fdata[1]
+  numstring = fdata[2:end]
+  sa        = split(numstring[1], ',')'
+
+  for i in 2:length(numstring) 
+    sa  = [sa ; split(numstring[i], ',')']
+  end
+
+  time_conversion = map(x -> parse("yyyy-MM-dd", x), convert(Array{UTF16String}, sa[:,1]))
+
+  df = DataFrame(quote
+     Date  = $time_conversion
+     Open  = float($sa[:,2])
+     High  = float($sa[:,3])
+     Low   = float($sa[:,4])
+     Close = float($sa[:,5])
+     Vol   =   int($sa[:,6])
+     Adj   = float($sa[:,7])
+     end)
+
+  flipud(df)
+
+
   # code here
 end
 
@@ -70,8 +100,9 @@ fred(s::String)   = fetch_asset(s::String, "fred")
 
 function read_asset(filename::String)
 
-  csv = string(dir, "/", filename)
-  df  = read_table(csv)
+#  csv = string(dir, "/", filename)
+#  df  = read_table(csv)
+  df  = read_table(filename)
   
   time_conversion = map(x -> parse("yyyy-MM-dd", x), 
                        convert(Array{UTF16String}, vector(df[:,1])))

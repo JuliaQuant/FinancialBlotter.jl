@@ -8,6 +8,7 @@ export Stock,
        fetch_asset,
        fetch_asset!,
        read_asset,
+       read_fred,
        read_asset!,
 # aliases
        yahoo,
