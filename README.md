@@ -57,6 +57,6 @@ julia> GLD.tick
 ````
 
 
-The `Stock` type is experimental at this point. Alignment along the `IndexedVector` hasn't been thoroughly stress=tested.
+The `Stock` type is experimental at this point. Alignment along the `IndexedVector` hasn't been thoroughly stress-tested.
 
 
