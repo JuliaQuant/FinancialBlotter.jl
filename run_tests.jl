@@ -1,6 +1,6 @@
 require("test.jl")
 
-using TradeInstrument
+using TradingInstrument
 
 my_tests = ["test/reader.jl"] 
 

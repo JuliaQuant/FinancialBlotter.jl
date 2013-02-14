@@ -1,12 +1,11 @@
-#using Stats, DataFrames, Calendar, UTF16, TimeSeries 
+using Stats, DataFrames, Calendar, UTF16, TimeSeries 
 
-module TradeInstrument
+module TradingInstrument
 
 using Stats, DataFrames, Calendar, UTF16, TimeSeries
 
-abstract AbstractAsset <: Associative{String, Any}
-
-export fetch_asset,
+export Stock,
+       fetch_asset,
        read_asset,
 # future month abbreviations
        F,
@@ -25,7 +24,7 @@ export fetch_asset,
        yahoo,
        fred,
 # testsuite macro
-       @tradeinstrument
+       @tradinginstrument
 
 include("reader.jl")
 include("stocks.jl")
@@ -33,6 +32,6 @@ include("futures.jl")
 include("options.jl")
 include("currencies.jl")
 include("notes.jl")
-include("testtradeinstrument.jl")
+include("testtradnginstrument.jl")
 
 end 

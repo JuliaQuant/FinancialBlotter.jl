@@ -1,8 +1,10 @@
-abstract AbstractStock <: AbstractAsset
+abstract AbstractStock 
 
 type Stock <: AbstractStock
-  id::String
-  currency::String
-  multiplier::Float64
-  tick_size ::Float64
+  ticker::String
+  ohlc::DataFrame
+  volume::DataArray{Int, 1}
+  adj::DataArray{Float64, 1}
+  idx::IndexedVector{CalendarTime}
+  tick_size::Float64
 end
