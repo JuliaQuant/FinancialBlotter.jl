@@ -10,7 +10,7 @@ function fetch_asset(s::String, source::String)
   else if source == "fred"
     read_fred(s)
   else
-  error("acceptable sources are yahoo or fred")
+    error("acceptable sources are yahoo or fred")
   end
   end
 end
@@ -47,9 +47,9 @@ function read_yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, 
 end
 
 ################# read_fred
-function read_fred(stock::String)
+function read_fred(econdata::String)
 
-fdata = readlines(`curl -s "http://research.stlouisfed.org/fred2/series/$stock/downloaddata/$stock.csv"`)
+fdata = readlines(`curl -s "http://research.stlouisfed.org/fred2/series/$econdata/downloaddata/$econdata.csv"`)
 
 
 #  startdate = string(fy, "-", fm, "-", fd)
@@ -93,7 +93,13 @@ end
 ############### DEFAULT ###########################
 
 ## last three years, daily data
-read_yahoo(stock::String) = read_yahoo(stock::String, month(now()), day(now()), year(now())-3, month(now()),  day(now()), year(now()), "d")
+read_yahoo(stock::String) = read_yahoo(stock::String, 
+                                       month(now()), 
+                                       day(now()), 
+                                       year(now())-3, 
+                                       month(now()),  
+                                       day(now()), 
+                                       year(now()), "d")
 
 ############### ALIASES ###########################
 
@@ -105,9 +111,6 @@ fred(s::String)   = fetch_asset(s::String, "fred")
 #### import time series from a local directory
 ####
 ##########################################################
-
-# function read_yahoo(dir::String, filename::String)
-# end
 
 function read_asset(filename::String)
 
