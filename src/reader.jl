@@ -8,14 +8,14 @@ function fetch_asset(s::String, source::String)
   if source == "yahoo"
     read_yahoo(s)
   else if source == "fred"
-    print_with_color(:green, "code not written yet for the FRED site") 
-    println("") 
+    read_fred(s)
   else
   error("acceptable sources are yahoo or fred")
   end
   end
 end
 
+################# read_yahoo
 function read_yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::Int, period::String)
 
 # take care of yahoo's 0 indexing for month
@@ -23,11 +23,12 @@ function read_yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, 
   tm-=1
 
   ydata = readlines(`curl -s "http://ichart.finance.yahoo.com/table.csv?s=$stock&a=$fm&b=$fd&c=$fy&d=$tm&e=$td&f=$ty&g=$period"`)
+  colstring = ydata[1]
   numstring = ydata[2:end]
-  sa  = split(numstring[1], ',')'
+  sa  = split(numstring[1], ",")'
 
   for i in 2:length(numstring) 
-    sa  = [sa ; split(numstring[i], ',')']
+    sa  = [sa ; split(numstring[i], ",")']
   end
 
   time_conversion = map(x -> parse("yyyy-MM-dd", x), convert(Array{UTF16String}, sa[:,1]))
@@ -45,38 +46,49 @@ function read_yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, 
   flipud(df)
 end
 
-function read_fred(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::Int)
+################# read_fred
+function read_fred(stock::String)
 
-  startdate = string(fy, "-", fm, "-", fd)
-  enddate   = string(ty, "-", tm, "-", td)
+fdata = readlines(`curl -s "http://research.stlouisfed.org/fred2/series/$stock/downloaddata/$stock.csv"`)
 
-  apikey = "47535fa5db345b924d890ec189a33036"
-  
-  fdata = readlines(`curl -s "http://api.stlouisfed.org/fred/series/observations?series_id=$stock&realtime_start=$startdate&realtime_end=$enddate&api_key=$apikey"`)
+
+#  startdate = string(fy, "-", fm, "-", fd)
+#  enddate   = string(ty, "-", tm, "-", td)
+#  apikey = "47535fa5db345b924d890ec189a33036"
+#  fdata = readlines(`curl -s "http://api.stlouisfed.org/fred/series/observations?series_id=$stock&realtime_start=$startdate&realtime_end=$enddate&api_key=$apikey"`)
+
+
   colstring = fdata[1]
   numstring = fdata[2:end]
-  sa        = split(numstring[1], ',')'
+  sa        = split(numstring[1], ",")'
 
-  for i in 2:length(numstring) 
-    sa  = [sa ; split(numstring[i], ',')']
+  # this is an ugly bottleneck
+  for i in 1:length(numstring) 
+    sa  = [sa ; split(numstring[i], ",")']
   end
+
+
+   # hack to replace missingness with NA via 99
+   foo = fill("a", length(numstring))
+   for i in 1:length(numstring)
+     foo[i] = replace(sa[i,2], ".\r\n", "99")
+   end
 
   time_conversion = map(x -> parse("yyyy-MM-dd", x), convert(Array{UTF16String}, sa[:,1]))
 
   df = DataFrame(quote
      Date  = $time_conversion
-     Open  = float($sa[:,2])
-     High  = float($sa[:,3])
-     Low   = float($sa[:,4])
-     Close = float($sa[:,5])
-     Vol   =   int($sa[:,6])
-     Adj   = float($sa[:,7])
+     Value = float($foo)
      end)
+  
+ # hack to get NAs into the df where there was originally missing data
+  for i in 1:nrow(df)
+    if df[i,2] == 99.0
+      df[i,2] = NA
+     end
+   end  
 
   flipud(df)
-
-
-  # code here
 end
 
 ############### DEFAULT ###########################
@@ -123,8 +135,9 @@ function fetch_asset!(s::String, source::String)
   if source == "yahoo"
     typed_stock = read_yahoo(s)
   else if source == "fred"
-    print_with_color(:green, "code not written yet for the FRED site") 
-    println("") 
+#    typed_stock = read_fred(s)
+    print_with_color(:yellow, "work in progress")
+    println()
   else
   error("acceptable sources are yahoo or fred")
   end
