@@ -114,8 +114,6 @@ fred(s::String)   = fetch_asset(s::String, "fred")
 
 function read_asset(filename::String)
 
-#  csv = string(dir, "/", filename)
-#  df  = read_table(csv)
   df  = read_table(filename)
   
   time_conversion = map(x -> parse("yyyy-MM-dd", x), 
