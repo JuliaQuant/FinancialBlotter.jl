@@ -23,18 +23,19 @@ function read_yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, 
   tm-=1
 
   ydata = readlines(`curl -s "http://ichart.finance.yahoo.com/table.csv?s=$stock&a=$fm&b=$fd&c=$fy&d=$tm&e=$td&f=$ty&g=$period"`)
-  colstring = ydata[1]
-  numstring = ydata[2:end]
-  sa  = split(numstring[1], ",")'
+  name_string = ydata[1]
+  val_string = ydata[2:end]
 
-  for i in 2:length(numstring) 
-    sa  = [sa ; split(numstring[i], ",")']
+  sa  = split(val_string[1], ",")'
+  for i in 2:length(val_string) 
+    sa  = [sa ; split(val_string[i], ",")']
   end
 
-  time_conversion = map(x -> parse("yyyy-MM-dd", x), convert(Array{UTF16String}, sa[:,1]))
+  time_array = map(x -> parse("yyyy-MM-dd", x), 
+                        convert(Array{UTF16String}, sa[:,1]))
 
   df = DataFrame(quote
-     Date  = $time_conversion
+     Date  = $time_array
      Open  = float($sa[:,2])
      High  = float($sa[:,3])
      Low   = float($sa[:,4])
@@ -49,35 +50,35 @@ end
 ################# read_fred
 function read_fred(econdata::String)
 
-fdata = readlines(`curl -s "http://research.stlouisfed.org/fred2/series/$econdata/downloaddata/$econdata.csv"`)
+  fdata = readlines(`curl -s "http://research.stlouisfed.org/fred2/series/$econdata/downloaddata/$econdata.csv"`)
 
-
-#  startdate = string(fy, "-", fm, "-", fd)
-#  enddate   = string(ty, "-", tm, "-", td)
-#  apikey = "47535fa5db345b924d890ec189a33036"
-#  fdata = readlines(`curl -s "http://api.stlouisfed.org/fred/series/observations?series_id=$stock&realtime_start=$startdate&realtime_end=$enddate&api_key=$apikey"`)
-
-
-  colstring = fdata[1]
-  numstring = fdata[2:end]
-  sa        = split(numstring[1], ",")'
+  name_string = fdata[1]
+  val_string = fdata[2:end]
 
   # this is an ugly bottleneck
-  for i in 1:length(numstring) 
-    sa  = [sa ; split(numstring[i], ",")']
-  end
+#  sa        = split(val_string[1], ",")'
+#  for i in 1:length(val_string) 
+#    sa  = [sa ; split(val_string[i], ",")']
+#  end
 
+  # alternate approach
+  str_array = map(x -> split(x, ","), val_string)  
 
+  # get the time
+  time_str  = map(x -> x[:][1], str_array)
+  time_array= map(x -> parse("yyyy-MM-dd", x), 
+                  convert(Array{UTF16String}, time_str))
+  time_df = @DataFrame("Date" => time_array)
+                                                  
    # hack to replace missingness with NA via 99
-   foo = fill("a", length(numstring))
-   for i in 1:length(numstring)
+   foo = fill("a", length(val_string))
+   for i in 1:length(val_string)
      foo[i] = replace(sa[i,2], ".\r\n", "99")
    end
 
-  time_conversion = map(x -> parse("yyyy-MM-dd", x), convert(Array{UTF16String}, sa[:,1]))
 
   df = DataFrame(quote
-     Date  = $time_conversion
+     Date  = $time_array
      Value = float($foo)
      end)
   
@@ -117,13 +118,14 @@ function read_asset(filename::String)
   df  = read_table(filename)
 
 # capture the first column as Date  
-
-  time_conversion = map(x -> parse("yyyy-MM-dd", x), 
-                       convert(Array{UTF16String}, vector(df[:,1])))
-  dfi   = @DataFrame("Date" => time_conversion)
+  time_array = map(x -> parse("yyyy-MM-dd", x), 
+                   convert(Array{UTF16String}, vector(df[:,1])))
+  dfi   = @DataFrame("Date" => time_array)
+ 
+# fill missing values with NA
+  dfval = df[:,2:end]
 
 # re-attach first column as first column of original
-  dfval = df[:,2:end]
   res   = cbind(dfi, dfval);
 
 # start with first row oldest date
