@@ -115,14 +115,22 @@ fred(s::String)   = fetch_asset(s::String, "fred")
 function read_asset(filename::String)
 
   df  = read_table(filename)
-  
+
+# capture the first column as Date  
+
   time_conversion = map(x -> parse("yyyy-MM-dd", x), 
                        convert(Array{UTF16String}, vector(df[:,1])))
-  within!(df, quote
-          Date = $(time_conversion)
-          end)
-  
-  flipud(df)
+  dfi   = @DataFrame("Date" => time_conversion)
+
+# re-attach first column as first column of original
+  dfval = df[:,2:end]
+  res   = cbind(dfi, dfval);
+
+# start with first row oldest date
+  if day(res[1,1]) > day(res[2,1]) 
+    res = flipud(df)
+  end
+  res
 end
 
 ##########################################################
