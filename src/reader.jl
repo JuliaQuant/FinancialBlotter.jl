@@ -68,24 +68,34 @@ function read_fred(econdata::String)
                   convert(Array{UTF16String}, time_str)) # convert to CalendarTime type
   time_df    = @DataFrame("Date" => time_array) # generate DF for later binding
                                                   
-   # hack to replace missingness with NA via 99
-   foo = fill("a", length(val_string))
-   for i in 1:length(val_string)
-     foo[i] = replace(sa[i,2], ".\r\n", "99")
-   end
+#   # hack to replace missingness with NA via 99
+#   foo = fill("a", length(val_string))
+#   for i in 1:length(val_string)
+#     foo[i] = replace(sa[i,2], ".\r\n", "99")
+#   end
+  
 
+  # hack to replace missingness with NA via 99
+  val_str = map(x -> x[:][2], str_array) # take only the second column of values 
+  temp_val_array = map(x -> x == "" || x == ".\r\n" ? (x = 99.) : (x = float(x)), val_str)
+  temp_df = @DataFrame(value  => temp_val_array)
+  nadf    = map(x -> x == 99 ? (x = NA) : (x = x), temp_df[1])
 
-  df = DataFrame(quote
-     Date  = $time_array
-     Value = float($foo)
-     end)
+  
+#   df = DataFrame(quote
+#      Date  = $time_array
+#      Value = float($foo)
+#      end)
   
  # hack to get NAs into the df where there was originally missing data
-  for i in 1:nrow(df)
-    if df[i,2] == 99.0
-      df[i,2] = NA
-     end
-   end  
+ #  for i in 1:nrow(df)
+ #    if df[i,2] == 99.0
+ #      df[i,2] = NA
+ #     end
+ #   end  
+
+  df = cbind(time_df, nadf)
+
   df
 end
 
@@ -118,7 +128,7 @@ function read_asset(filename::String)
 # capture the first column as Date  
   time_array = map(x -> parse("yyyy-MM-dd", x), 
                    convert(Array{UTF16String}, vector(df[:,1])))
-#  dfi   = @DataFrame("Date" => time_array) # this doesn't show "Date" but a hex string instead
+#  dfi   = @DataFrame(Date => time_array) # this doesn't show "Date" but a hex string instead
    dfi   = DataFrame(quote Date = $time_array end)
 
 # fill missing values with NA
