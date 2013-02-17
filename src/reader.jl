@@ -52,23 +52,21 @@ function read_fred(econdata::String)
 
   fdata = readlines(`curl -s "http://research.stlouisfed.org/fred2/series/$econdata/downloaddata/$econdata.csv"`)
 
-  name_string = fdata[1]
-  val_string = fdata[2:end]
+  # names
+  name_string   = fdata[1] # header for the file
+  allname_array = split(name_string, ",") # take the header and split it into separate strings
+  name_array    = allname_array[2:end] # not interested in the first one which is Date
+  number_names  = length(name_array) # total the number of col names for future iteration
 
-  # this is an ugly bottleneck
-#  sa        = split(val_string[1], ",")'
-#  for i in 1:length(val_string) 
-#    sa  = [sa ; split(val_string[i], ",")']
-#  end
-
-  # alternate approach
-  str_array = map(x -> split(x, ","), val_string)  
+  # values
+  val_string = fdata[2:end] # all the column values including Date
+  str_array = map(x -> split(x, ","), val_string) # split each single row string into strings split on , 
 
   # get the time
-  time_str  = map(x -> x[:][1], str_array)
-  time_array= map(x -> parse("yyyy-MM-dd", x), 
-                  convert(Array{UTF16String}, time_str))
-  time_df = @DataFrame("Date" => time_array)
+  time_str   = map(x -> x[:][1], str_array) # take only the first column of values for time
+  time_array = map(x -> parse("yyyy-MM-dd", x), 
+                  convert(Array{UTF16String}, time_str)) # convert to CalendarTime type
+  time_df    = @DataFrame("Date" => time_array) # generate DF for later binding
                                                   
    # hack to replace missingness with NA via 99
    foo = fill("a", length(val_string))
@@ -120,17 +118,18 @@ function read_asset(filename::String)
 # capture the first column as Date  
   time_array = map(x -> parse("yyyy-MM-dd", x), 
                    convert(Array{UTF16String}, vector(df[:,1])))
-  dfi   = @DataFrame("Date" => time_array)
- 
+#  dfi   = @DataFrame("Date" => time_array) # this doesn't show "Date" but a hex string instead
+   dfi   = DataFrame(quote Date = $time_array end)
+
 # fill missing values with NA
   dfval = df[:,2:end]
 
 # re-attach first column as first column of original
-  res   = cbind(dfi, dfval);
+  res   = cbind(dfi, dfval)
 
-# start with first row oldest date
+# insure first row is oldest date
   if day(res[1,1]) > day(res[2,1]) 
-    res = flipud(df)
+    res = flipud(res)
   end
   res
 end
@@ -153,11 +152,13 @@ function fetch_asset!(s::String, source::String)
   end
   end
   # need control flow, this case only applies to Yahoo format
+#  if source == "yahoo"
   res = Stock(s, 
               IndexedVector(typed_stock["Date"]), 
               typed_stock[["Open", "High", "Low", "Close", "Adj"]], 
               typed_stock["Vol"], 
               .01)
+#  end
 end
 
 
