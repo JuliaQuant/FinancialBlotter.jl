@@ -63,17 +63,15 @@ function read_fred(econdata::String)
   vals = map(x -> split(x, ","), all_val) # split each single row string into strings split on , 
 
   # get the time
-  time_str   = map(x -> x[:][1], vals) # take only the first column of values for time
+  time_str = map(x -> x[:][1], vals) # take only the first column of values for time
   time_array = map(x -> parse("yyyy-MM-dd", x), 
                   convert(Array{UTF16String}, time_str)) # convert to CalendarTime type
-  time_df    = @DataFrame("Date" => time_array) # generate DF for later binding
-                                                  
+  time_df = @DataFrame("Date" => time_array) # generate DF for later binding
 
   # get the value of second column 
-  val_str = map(x -> x[:][2], str_array) # take only the second column of values 
+  val_str = map(x -> x[:][2], vals) # take only the second column of values 
   val_array = map(x -> x == "" || x == ".\r\n" ? (x = NA) : (x = float(x)), val_str)
   val_df = @DataFrame($header[1] => val_array)
-  
 
   df = cbind(time_df, val_df)
 
@@ -108,16 +106,17 @@ function read_asset(filename::String)
 # capture the first column as Date  
   time_array = map(x -> parse("yyyy-MM-dd", x), 
                    convert(Array{UTF16String}, vector(df[:,1])))
-#  dfi   = @DataFrame(Date => time_array) # this doesn't show "Date" but a hex string instead
-   dfi   = DataFrame(quote Date = $time_array end)
+  dfi   = @DataFrame(Date => time_array) 
+#   dfi   = DataFrame(quote Date = $time_array end)
 
 # fill missing values with NA
+# fill out values (NAs are now free) 
   dfval = df[:,2:end]
 
 # re-attach first column as first column of original
   res   = cbind(dfi, dfval)
 
-# insure first row is oldest date
+# first row is oldest date
   if day(res[1,1]) > day(res[2,1]) 
     res = flipud(res)
   end
