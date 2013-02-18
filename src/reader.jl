@@ -53,50 +53,30 @@ function read_fred(econdata::String)
   fdata = readlines(`curl -s "http://research.stlouisfed.org/fred2/series/$econdata/downloaddata/$econdata.csv"`)
 
   # names
-  name_string   = fdata[1] # header for the file
-  allname_array = split(name_string, ",") # take the header and split it into separate strings
-  name_array    = allname_array[2:end] # not interested in the first one which is Date
-  number_names  = length(name_array) # total the number of col names for future iteration
+  header = fdata[1]              # header for the file
+  headers = split(header, ",")   # take the header and split it into separate strings
+  head_names = headers[2:end]    # not interested in the first one which is Date
+  num_names = length(head_names) # total the number of col names for future iteration
 
   # values
-  val_string = fdata[2:end] # all the column values including Date
-  str_array = map(x -> split(x, ","), val_string) # split each single row string into strings split on , 
+  all_val = fdata[2:end] # all the column values including Date
+  vals = map(x -> split(x, ","), all_val) # split each single row string into strings split on , 
 
   # get the time
-  time_str   = map(x -> x[:][1], str_array) # take only the first column of values for time
+  time_str   = map(x -> x[:][1], vals) # take only the first column of values for time
   time_array = map(x -> parse("yyyy-MM-dd", x), 
                   convert(Array{UTF16String}, time_str)) # convert to CalendarTime type
   time_df    = @DataFrame("Date" => time_array) # generate DF for later binding
                                                   
-#   # hack to replace missingness with NA via 99
-#   foo = fill("a", length(val_string))
-#   for i in 1:length(val_string)
-#     foo[i] = replace(sa[i,2], ".\r\n", "99")
-#   end
-  
 
-  # hack to replace missingness with NA via 99
+  # get the value of second column 
   val_str = map(x -> x[:][2], str_array) # take only the second column of values 
-  temp_val_array = map(x -> x == "" || x == ".\r\n" ? (x = 99.) : (x = float(x)), val_str)
-  temp_df = @DataFrame(value  => temp_val_array)
-  nadf    = map(x -> x == 99 ? (x = NA) : (x = x), temp_df[1])
-
+  val_array = map(x -> x == "" || x == ".\r\n" ? (x = NA) : (x = float(x)), val_str)
+  val_df = @DataFrame($header[1] => val_array)
   
-#   df = DataFrame(quote
-#      Date  = $time_array
-#      Value = float($foo)
-#      end)
-  
- # hack to get NAs into the df where there was originally missing data
- #  for i in 1:nrow(df)
- #    if df[i,2] == 99.0
- #      df[i,2] = NA
- #     end
- #   end  
 
-  df = cbind(time_df, nadf)
+  df = cbind(time_df, val_df)
 
-  df
 end
 
 ############### DEFAULT ###########################
