@@ -71,7 +71,7 @@ function read_fred(econdata::String)
   # get the value of second column 
   val_str = map(x -> x[:][2], vals) # take only the second column of values 
   val_array = map(x -> x == "" || x == ".\r\n" ? (x = NA) : (x = float(x)), val_str)
-  val_df = @DataFrame($header[1] => val_array)
+  val_df = @DataFrame($econdata => val_array)
 
   df = cbind(time_df, val_df)
 
@@ -107,9 +107,7 @@ function read_asset(filename::String)
   time_array = map(x -> parse("yyyy-MM-dd", x), 
                    convert(Array{UTF16String}, vector(df[:,1])))
   dfi   = @DataFrame(Date => time_array) 
-#   dfi   = DataFrame(quote Date = $time_array end)
 
-# fill missing values with NA
 # fill out values (NAs are now free) 
   dfval = df[:,2:end]
 
