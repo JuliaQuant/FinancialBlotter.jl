@@ -1,6 +1,6 @@
 ##########################################################
 ####
-#### import time series from yahoo or FRED 
+#### import time series from yahoo or FRED and return DataFrame
 ####
 ##########################################################
 
@@ -151,3 +151,18 @@ end
 
 yahoo!(s::String) = fetch_asset!(s::String, "yahoo") 
 fred!(s::String)  = fetch_asset!(s::String, "fred") 
+
+##########################################################
+####
+#### import Yahoo option series
+####
+##########################################################
+
+
+function optionseries(ticker::String)
+  # code here to return a DataFrame
+end
+
+function optionseries!(ticker::String)
+  # code here to return an OptionSeries object
+end
