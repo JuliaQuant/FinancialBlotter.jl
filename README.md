@@ -59,4 +59,20 @@ julia> GLD.tick
 
 The `Stock` type is experimental at this point. Alignment along the `IndexedVector` hasn't been thoroughly stress-tested.
 
+The `read_asset` function is designed to read in data that you already have locally, and deal with `NA`s. 
+
+````julia
+julia> dgs = read_asset(Pkg.dir("TradingInstrument", "test", "data", "DGS10.csv"));
+
+julia> head(dgs, 3)
+3x2 DataFrame:
+              Date VALUE
+[1,]    1962-01-02  4.06
+[2,]    1962-01-03  4.03
+[3,]    1962-01-04  3.99
+
+
+julia> sum(dgs["VALUE"].na)
+573
+````
 
