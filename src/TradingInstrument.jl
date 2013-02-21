@@ -3,6 +3,7 @@ module TradingInstrument
 using Stats, DataFrames, Calendar, UTF16, TimeSeries
 
 export Stock,
+       OptionSeries,
        fetch_asset,
        fetch_asset!,
        read_asset,
@@ -31,7 +32,7 @@ export Stock,
 include("reader.jl")
 include("stocks.jl")
 include("futures.jl")
-include("options.jl")
+include("optionseries.jl")
 include("currencies.jl")
 include("notes.jl")
 include("testtradinginstrument.jl")
