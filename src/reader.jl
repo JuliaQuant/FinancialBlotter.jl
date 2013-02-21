@@ -4,16 +4,16 @@
 ####
 ##########################################################
 
-function fetch_asset(s::String, source::String)
-  if source == "yahoo"
-    read_yahoo(s)
-  else if source == "fred"
-    read_fred(s)
-  else
-    error("acceptable sources are yahoo or fred")
-  end
-  end
-end
+# function fetch_asset(s::String, source::String)
+#   if source == "yahoo"
+#     read_yahoo(s)
+#   else if source == "fred"
+#     read_fred(s) # this is broken not sure why
+#   else
+#     error("acceptable sources are yahoo or fred")
+#   end
+#   end
+# end
 
 ################# read_yahoo
 function read_yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::Int, period::String)
@@ -48,15 +48,9 @@ function read_yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, 
 end
 
 ################# read_fred
-function read_fred(econdata::String)
+function read_fred(econdata::String, colname::String)
 
   fdata = readlines(`curl -s "http://research.stlouisfed.org/fred2/series/$econdata/downloaddata/$econdata.csv"`)
-
-  # names
-  header = fdata[1]              # header for the file
-  headers = split(header, ",")   # take the header and split it into separate strings
-  head_names = headers[2:end]    # not interested in the first one which is Date
-  num_names = length(head_names) # total the number of col names for future iteration
 
   # values
   all_val = fdata[2:end] # all the column values including Date
@@ -70,8 +64,8 @@ function read_fred(econdata::String)
 
   # get the value of second column 
   val_str = map(x -> x[:][2], vals) # take only the second column of values 
-  val_array = map(x -> x == "" || x == ".\r\n" ? (x = NA) : (x = float(x)), val_str)
-  val_df = @DataFrame($econdata => val_array)
+  val_array = map(x -> x == "" || x == ".\r\n" ? (x = NA) : (x = float(x)), val_str) #TODO clean this mess up
+  val_df = @DataFrame($colname=> val_array)
 
   df = cbind(time_df, val_df)
 
@@ -88,10 +82,17 @@ read_yahoo(stock::String) = read_yahoo(stock::String,
                                        day(now()), 
                                        year(now()), "d")
 
+## name the fred column "VALUE"
+read_fred(econdata::String) = read_fred(econdata::String, "VALUE")
+
 ############### ALIASES ###########################
 
-yahoo(s::String)  = fetch_asset(s::String, "yahoo") 
-fred(s::String)   = fetch_asset(s::String, "fred") 
+# yahoo(s::String)  = fetch_asset(s::String, "yahoo") 
+# fred(s::String)   = fetch_asset(s::String, "fred") 
+
+yahoo(s::String) = read_yahoo(s::String) 
+fred(s::String) = read_fred(s::String)
+fred(s::String, c::String) = read_fred(s::String, c::String)
 
 ##########################################################
 ####

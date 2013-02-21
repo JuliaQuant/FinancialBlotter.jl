@@ -3,6 +3,8 @@ module TradingInstrument
 using Stats, DataFrames, Calendar, UTF16, TimeSeries
 
 export Stock,
+       read_yahoo,
+       read_fred,
        fetch_asset,
        fetch_asset!,
        read_asset,
