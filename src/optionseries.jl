@@ -1,7 +1,7 @@
 abstract AbstractFinancialDerivative
 
 type OptionSeries <: AbstractFinancialDerivative
-  ticker::String
+  root::String
   option_code::String
   expiry::CalendarTime
   calls::DataFrame
