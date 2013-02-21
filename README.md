@@ -76,3 +76,23 @@ julia> sum(dgs["VALUE"].na)
 573
 ````
 
+Download data from FRED. You can allow the column name to stay as the generic "VALUE" that FRED is fond of, 
+or you can pass in a string to name the column to something more informative.
+
+````julia
+julia> head(fred("DGS10", "DGS10"), 3)
+3x2 DataFrame:
+              Date DGS10
+[1,]    1962-01-02  4.06
+[2,]    1962-01-03  4.03
+[3,]    1962-01-04  3.99
+
+
+julia> head(fred("DGS10"), 3)
+3x2 DataFrame:
+              Date VALUE
+[1,]    1962-01-02  4.06
+[2,]    1962-01-03  4.03
+[3,]    1962-01-04  3.99
+````
+
