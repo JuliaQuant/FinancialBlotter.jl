@@ -128,37 +128,21 @@ end
 ####
 ##########################################################
 
-function fetch_asset!(s::String, source::String)
-  if source == "yahoo"
-    typed_stock = read_yahoo(s)
-  else if source == "fred"
-#    typed_stock = read_fred(s)
-    print_with_color(:yellow, "work in progress")
-    println()
-  else
-  error("acceptable sources are yahoo or fred")
-  end
-  end
-  # need control flow, this case only applies to Yahoo format
-#  if source == "yahoo"
+function yahoo!(s::String)
+  typed_stock = read_yahoo(s)
+
   res = Stock(s, 
               IndexedVector(typed_stock["Date"]), 
               typed_stock[["Open", "High", "Low", "Close", "Adj"]], 
               typed_stock["Vol"], 
               .01)
-#  end
 end
-
-
-yahoo!(s::String) = fetch_asset!(s::String, "yahoo") 
-fred!(s::String)  = fetch_asset!(s::String, "fred") 
 
 ##########################################################
 ####
 #### import Yahoo option series
 ####
 ##########################################################
-
 
 function optionseries(ticker::String)
   # code here to return a DataFrame
