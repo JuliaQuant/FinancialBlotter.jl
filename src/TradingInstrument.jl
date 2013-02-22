@@ -5,13 +5,10 @@ module TradingInstrument
 using Stats, DataFrames, Calendar, UTF16, TimeSeries
 
 export Stock,
-       read_yahoo,
-       yahoo!,
-       read_fred,
-       read_asset,
-# aliases
        yahoo,
+       yahoo!,
        fred,
+       read_asset,
 # future month abbreviations
        F,
        G,

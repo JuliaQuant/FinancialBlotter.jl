@@ -4,19 +4,9 @@
 ####
 ##########################################################
 
-# function fetch_asset(s::String, source::String)
-#   if source == "yahoo"
-#     read_yahoo(s)
-#   else if source == "fred"
-#     read_fred(s) # this is broken not sure why
-#   else
-#     error("acceptable sources are yahoo or fred")
-#   end
-#   end
-# end
+################# yahoo
 
-################# read_yahoo
-function read_yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::Int, period::String)
+function yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::Int, period::String)
 
 # take care of yahoo's 0 indexing for month
   fm-=2
@@ -47,8 +37,9 @@ function read_yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, 
   flipud(df)
 end
 
-################# read_fred
-function read_fred(econdata::String, colname::String)
+################# fred
+
+function fred(econdata::String, colname::String)
 
   fdata = readlines(`curl -s "http://research.stlouisfed.org/fred2/series/$econdata/downloaddata/$econdata.csv"`)
 
@@ -74,25 +65,16 @@ end
 ############### DEFAULT ###########################
 
 ## last three years, daily data
-read_yahoo(stock::String) = read_yahoo(stock::String, 
-                                       month(now()), 
-                                       day(now()), 
-                                       year(now())-3, 
-                                       month(now()),  
-                                       day(now()), 
-                                       year(now()), "d")
+yahoo(stock::String) = yahoo(stock::String, 
+                             month(now()), 
+                             day(now()), 
+                             year(now())-3, 
+                             month(now()),  
+                             day(now()), 
+                             year(now()), "d")
 
 ## name the fred column "VALUE"
-read_fred(econdata::String) = read_fred(econdata::String, "VALUE")
-
-############### ALIASES ###########################
-
-# yahoo(s::String)  = fetch_asset(s::String, "yahoo") 
-# fred(s::String)   = fetch_asset(s::String, "fred") 
-
-yahoo(s::String) = read_yahoo(s::String) 
-fred(s::String) = read_fred(s::String)
-fred(s::String, c::String) = read_fred(s::String, c::String)
+fred(econdata::String) = fred(econdata::String, "VALUE")
 
 ##########################################################
 ####
