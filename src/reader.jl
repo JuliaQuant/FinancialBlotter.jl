@@ -62,19 +62,6 @@ function fred(econdata::String, colname::String)
 
 end
 
-############### DEFAULT ###########################
-
-## last three years, daily data
-yahoo(stock::String) = yahoo(stock::String, 
-                             month(now()), 
-                             day(now()), 
-                             year(now())-3, 
-                             month(now()),  
-                             day(now()), 
-                             year(now()), "d")
-
-## name the fred column "VALUE"
-fred(econdata::String) = fred(econdata::String, "VALUE")
 
 ##########################################################
 ####
@@ -110,10 +97,10 @@ end
 ####
 ##########################################################
 
-function yahoo!(s::String)
-  typed_stock = read_yahoo(s)
+function yahoo!(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::Int, period::String)
+  typed_stock = yahoo(stock, fm, fd, fy, tm, td, ty, period)
 
-  res = Stock(s, 
+  res = Stock(stock, 
               IndexedVector(typed_stock["Date"]), 
               typed_stock[["Open", "High", "Low", "Close", "Adj"]], 
               typed_stock["Vol"], 
@@ -133,3 +120,26 @@ end
 function optionseries!(ticker::String)
   # code here to return an OptionSeries object
 end
+
+############### DEFAULT ###########################
+
+## last three years, daily data
+yahoo(stock::String) = yahoo(stock::String, 
+                             month(now()), 
+                             day(now()), 
+                             year(now())-3, 
+                             month(now()),  
+                             day(now()), 
+                             year(now()), "d")
+
+## last three years, daily data
+yahoo!(stock::String) = yahoo(stock::String, 
+                             month(now()), 
+                             day(now()), 
+                             year(now())-3, 
+                             month(now()),  
+                             day(now()), 
+                             year(now()), "d")
+
+## name the fred column "VALUE"
+fred(econdata::String) = fred(econdata::String, "VALUE")
