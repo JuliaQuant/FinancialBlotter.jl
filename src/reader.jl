@@ -9,7 +9,7 @@
 function yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::Int, period::String)
 
 # take care of yahoo's 0 indexing for month
-  fm-=2
+  fm-=1
   tm-=1
 
   ydata = readlines(`curl -s "http://ichart.finance.yahoo.com/table.csv?s=$stock&a=$fm&b=$fd&c=$fy&d=$tm&e=$td&f=$ty&g=$period"`)
