@@ -12,55 +12,22 @@ function yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::I
   fm-=1
   tm-=1
 
-  ydata = readlines(`curl -s "http://ichart.finance.yahoo.com/table.csv?s=$stock&a=$fm&b=$fd&c=$fy&d=$tm&e=$td&f=$ty&g=$period"`)
+  ydata = download("http://ichart.finance.yahoo.com/table.csv?s=$stock&a=$fm&b=$fd&c=$fy&d=$tm&e=$td&f=$ty&g=$period", "y.csv")
+  df    = read_asset("y.csv")
+  run(`rm y.csv`)
 
-  ## name_string = ydata[1]
-  ## val_string = ydata[2:end]
-
-  ## sa  = split(val_string[1], ",")'
-  ## for i in 2:length(val_string) 
-  ##   sa  = [sa ; split(val_string[i], ",")']
-  ## end
-
-  ## time_array = map(x -> parse("yyyy-MM-dd", x), 
-  ##                       convert(Array{UTF16String}, sa[:,1]))
-
-  ## df = DataFrame(quote
-  ##    Date  = $time_array
-  ##    Open  = float($sa[:,2])
-  ##    High  = float($sa[:,3])
-  ##    Low   = float($sa[:,4])
-  ##    Close = float($sa[:,5])
-  ##    Vol   =   int($sa[:,6])
-  ##    Adj   = float($sa[:,7])
-  ##    end)
-
-  ## flipud(df)
+  return df
 end
 
 ################# fred
 
 function fred(econdata::String, colname::String)
 
-  fdata = readlines(`curl -s "http://research.stlouisfed.org/fred2/series/$econdata/downloaddata/$econdata.csv"`)
+  fdata = download("http://research.stlouisfed.org/fred2/series/$econdata/downloaddata/$econdata.csv", "f.csv")
+  df    = read_asset("f.csv")
+  run(`rm f.csv`)
 
-  # values
-  all_val = fdata[2:end] # all the column values including Date
-  vals = map(x -> split(x, ","), all_val) # split each single row string into strings split on , 
-
-  # get the time
-  time_str = map(x -> x[:][1], vals) # take only the first column of values for time
-  time_array = map(x -> parse("yyyy-MM-dd", x), 
-                  convert(Array{UTF16String}, time_str)) # convert to CalendarTime type
-  time_df = @DataFrame("Date" => time_array) # generate DF for later binding
-
-  # get the value of second column 
-  val_str = map(x -> x[:][2], vals) # take only the second column of values 
-  val_array = map(x -> x == "" || x == ".\r\n" ? (x = NA) : (x = float(x)), val_str) #TODO clean this mess up
-  val_df = @DataFrame($colname=> val_array)
-
-  df = cbind(time_df, val_df)
-
+  return df
 end
 
 
