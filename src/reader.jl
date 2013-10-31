@@ -13,28 +13,29 @@ function yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::I
   tm-=1
 
   ydata = readlines(`curl -s "http://ichart.finance.yahoo.com/table.csv?s=$stock&a=$fm&b=$fd&c=$fy&d=$tm&e=$td&f=$ty&g=$period"`)
-  name_string = ydata[1]
-  val_string = ydata[2:end]
 
-  sa  = split(val_string[1], ",")'
-  for i in 2:length(val_string) 
-    sa  = [sa ; split(val_string[i], ",")']
-  end
+  ## name_string = ydata[1]
+  ## val_string = ydata[2:end]
 
-  time_array = map(x -> parse("yyyy-MM-dd", x), 
-                        convert(Array{UTF16String}, sa[:,1]))
+  ## sa  = split(val_string[1], ",")'
+  ## for i in 2:length(val_string) 
+  ##   sa  = [sa ; split(val_string[i], ",")']
+  ## end
 
-  df = DataFrame(quote
-     Date  = $time_array
-     Open  = float($sa[:,2])
-     High  = float($sa[:,3])
-     Low   = float($sa[:,4])
-     Close = float($sa[:,5])
-     Vol   =   int($sa[:,6])
-     Adj   = float($sa[:,7])
-     end)
+  ## time_array = map(x -> parse("yyyy-MM-dd", x), 
+  ##                       convert(Array{UTF16String}, sa[:,1]))
 
-  flipud(df)
+  ## df = DataFrame(quote
+  ##    Date  = $time_array
+  ##    Open  = float($sa[:,2])
+  ##    High  = float($sa[:,3])
+  ##    Low   = float($sa[:,4])
+  ##    Close = float($sa[:,5])
+  ##    Vol   =   int($sa[:,6])
+  ##    Adj   = float($sa[:,7])
+  ##    end)
+
+  ## flipud(df)
 end
 
 ################# fred
@@ -71,29 +72,36 @@ end
 
 function read_asset(filename::String)
 
-  df  = read_table(filename)
+  df  = readtable(filename)
 
-# capture the first column as Date  
-  time_array = map(x -> parse("yyyy-MM-dd", x), 
-                   convert(Array{UTF16String}, vector(df[:,1])))
-  dfi   = @DataFrame(Date => time_array) 
-
-# fill out values (NAs are now free) 
-  dfval = df[:,2:end]
-
-# re-attach first column as first column of original
-  res   = cbind(dfi, dfval)
-
-# first row is oldest date
-  if day(res[1,1]) > day(res[2,1]) 
-    res = flipud(res)
+# find the column named date
+  for col in colnames(df)
+    ismatch(r"(?i)date", col)?
+    df[col] = Date[date(d) for d in df[col]]:
+    Nothing
   end
-  res
+
+# create IndedxedVector
+  for col in colnames(df)
+    ismatch(r"(?i)date", col)?
+    df[col] =  IndexedVector(df[col]):
+    Nothing
+  end
+
+# enforce descending order
+  for col in colnames(df)
+    ismatch(r"(?i)date", col) && df[1,col] > df[2, col]?
+    flipud!(df):
+    Nothing
+  end
+
+  return df
+
 end
 
 ##########################################################
 ####
-#### import time series and return Stock object with bang
+#### import time series and return Stock object 
 ####
 ##########################################################
 

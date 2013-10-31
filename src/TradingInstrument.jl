@@ -1,8 +1,10 @@
+#using Stats, DataFrames, Calendar, UTF16, TimeSeries
 using Stats, DataFrames, Calendar, UTF16, TimeSeries
 
 module TradingInstrument
 
-using Stats, DataFrames, Calendar, UTF16, TimeSeries
+#using Stats, DataFrames, Calendar, UTF16, TimeSeries
+using DataFrames, Datetime, TimeSeries
 
 export Stock,
        yahoo,
