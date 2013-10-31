@@ -6,7 +6,7 @@ using Stats, DataFrames, Calendar, UTF16, TimeSeries
 
 export Stock,
        yahoo,
-       yahoo!,
+       yahoo_stock,
        fred,
        read_asset,
 # future month abbreviations

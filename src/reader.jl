@@ -97,7 +97,7 @@ end
 ####
 ##########################################################
 
-function yahoo!(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::Int, period::String)
+function yahoo_stock(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::Int, period::String)
   typed_stock = yahoo(stock, fm, fd, fy, tm, td, ty, period)
 
   res = Stock(stock, 
