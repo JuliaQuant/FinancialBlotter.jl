@@ -24,10 +24,8 @@ end
 function fred(econdata::String, colname::String)
 
   fdata = download("http://research.stlouisfed.org/fred2/series/$econdata/downloaddata/$econdata.csv", "f.csv")
-  run(`sed 's/,\./,NA /g' f.csv` |> `cat f.csv` |> `tee fclean.csv`)
-  df    = read_asset("fclean.csv")
+  df    = read_asset("f.csv")
   run(`rm f.csv`)
-  run(`rm fclean.csv`)
 
   return df
 end
@@ -41,7 +39,7 @@ end
 
 function read_asset(filename::String)
 
-  df  = readtable(filename)
+  df  = readtable(filename, nastrings=[".", "", "NA"])
 
 # find the column named date
   typeof(df[1,1]) == Date{ISOCalendar}?
