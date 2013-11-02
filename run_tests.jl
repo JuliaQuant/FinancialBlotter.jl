@@ -2,7 +2,7 @@ require("test.jl")
 
 using TradingInstrument
 
-my_tests = ["test/reader.jl"] 
+my_tests = ["test/io.jl"] 
 
 print_with_color(:cyan, "Running tests: ") 
 println("")

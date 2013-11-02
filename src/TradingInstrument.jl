@@ -8,7 +8,6 @@ export Stock,
        yahoo,
        yahoo_stock,
        fred,
-       read_asset,
 # future month abbreviations
        F,
        G,
@@ -25,7 +24,7 @@ export Stock,
 # testsuite macro
        @tradinginstrument
 
-include("reader.jl")
+include("io.jl")
 include("stocks.jl")
 include("futures.jl")
 include("options.jl")
