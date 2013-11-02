@@ -1,8 +1,8 @@
-using DataFrames, Datetime, TimeSeries
+using TimeSeries
 
 module TradingInstrument
 
-using DataFrames, Datetime, TimeSeries
+using TimeSeries
 
 export Stock,
        yahoo,
