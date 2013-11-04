@@ -1,6 +1,5 @@
-require("test.jl")
-
 using TradingInstrument
+using Base.Test
 
 my_tests = ["test/io.jl"] 
 
