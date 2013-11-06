@@ -1,4 +1,4 @@
-TradingInstrument.jl is licensed under the MIT License:
+TradeInstrument.jl is licensed under the MIT License:
 
 > Copyright (c) 2013: Algorithm Alpha, LLC  and other contributors.
 >

@@ -1,4 +1,4 @@
-using TradingInstrument
+using TradeInstrument
 using Base.Test
 
 my_tests = ["test/io.jl"] 

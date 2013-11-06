@@ -3,7 +3,7 @@ Downloading financial time series data in Julia and providing useful financial a
 Inspired by R's `quantmod` and `FinancialInstrument`
 
 ````julia
-julia> Pkg.add("TradingInstrument")
+julia> Pkg.add("TradeInstrument")
 ````
 
 Download financial time series from Yahoo in one of two ways.  

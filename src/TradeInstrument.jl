@@ -1,6 +1,6 @@
 using DataFrames, Datetime, TimeSeries
 
-module TradingInstrument
+module TradeInstrument
 
 using DataFrames, Datetime, TimeSeries
 
@@ -22,7 +22,7 @@ export Stock,
        X,
        Z,
 # testsuite macro
-       @tradinginstrument
+       @tradeinstrument
 
 include("io.jl")
 include("stocks.jl")
@@ -30,6 +30,6 @@ include("futures.jl")
 include("options.jl")
 include("currencies.jl")
 include("notes.jl")
-include("testtradinginstrument.jl")
+include("testtradeinstrument.jl")
 
 end 
