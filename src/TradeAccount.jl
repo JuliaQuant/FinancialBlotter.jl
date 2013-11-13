@@ -4,7 +4,7 @@ module TradeAccount
 
 using  DataFrames, Datetime, TimeSeries, Winston
 
-export 
+export Blotter
 ## testing
        @tradeaccount
 
