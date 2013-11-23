@@ -6,7 +6,7 @@ using  DataFrames, Datetime, TimeSeries, Winston
 
 export Blotter
 ## testing
-       @tradeaccount
+#       @tradeaccount
 
 ################## include files #####################
 
