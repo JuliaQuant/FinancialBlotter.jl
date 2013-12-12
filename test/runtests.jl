@@ -1,5 +1,5 @@
-using FinancialInstrument 
 using Base.Test
+using FinancialInstrument 
 
 my_tests = ["blotter.jl", 
             "currencies.jl", 
