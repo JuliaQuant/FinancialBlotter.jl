@@ -9,7 +9,7 @@ type Blotter
     h = FramedPlot(title="Equity Curve")
 #    x = lterows(d, fm)   #fm
 #    x = gterows(d, to)   #to
-    x = [0:nrow(d)]
+    x = [0:size(d, 1)]
     y = equity(d["Close"])
     y[1] = 1.0
     pos = y .> 1  

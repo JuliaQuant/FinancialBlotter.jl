@@ -7,7 +7,7 @@ function plotequity(df::DataFrame, col::String, fm::Int,
   # shape the time series
   d = gterows(df, fm,fd,fy)   #from
   d = lterows(d, tm,td,ty)   #to
-  x = [0:nrow(d)-1]
+  x = [0:size(d, 1)-1]
   y = equity(d[col]) # take the column passed into function
   y[1] = 1.0    # replace NA with starting equity
 
@@ -39,6 +39,6 @@ plotequity(df::DataFrame) =
 plotequity(df::DataFrame, "Close", int(month(df[1,1])),
                                    int(day(df[1,1])),
                                    int(year(df[1,1])),
-                                   int(month(df[nrow(df),1])),
-                                   int(day(df[nrow(df),1])),
-                                   int(year(df[nrow(df),1]))) 
+                                   int(month(df[size(df, 1),1])),
+                                   int(day(df[size(df, 1),1])),
+                                   int(year(df[size(df, 1),1]))) 
