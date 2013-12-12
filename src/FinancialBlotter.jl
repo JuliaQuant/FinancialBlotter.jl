@@ -34,6 +34,6 @@ include("notes.jl")
 include("blotter.jl")
 include("ledger.jl")
 include("plots.jl")
-include("testfinancialblotter.jl")
+include("../testmacro.jl")
 
 end 
