@@ -1,4 +1,4 @@
-using TradeInstrument
+using FinancialInstrument 
 using Base.Test
 
 my_tests = ["blotter.jl", 
