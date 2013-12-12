@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/JuliaStats/FinancialBlotter.jl.png)](https://travis-ci.org/JuliaStats/FinancialBlotter.jl)
+[![Build Status](https://travis-ci.org/JuliaQuant/FinancialBlotter.jl.png)](https://travis-ci.org/JuliaQuant/FinancialBlotter.jl)
 
 Financial instrument types and accounting in Julia.
 
