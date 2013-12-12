@@ -12,7 +12,7 @@ before_install:
     - git config --global user.email "travis@example.net"
 script:
     - julia -e 'versioninfo(); Pkg.init();'
-    - julia -e 'Pkg.add("DataFrames"); Pkg.add("DataArrays"); Pkg.add("Datetime"); Pkg.add("TimeSeries"); Pkg.add("FinancialBlotter")'
+    - julia -e 'Pkg.add("DataFrames"); Pkg.add("DataArrays"); Pkg.add("Datetime"); Pkg.add("TimeSeries"); Pkg.add("Winston");'
     - mkdir -p ~/.julia/FinancialBlotter
     - cp -R ./* ~/.julia/FinancialBlotter/
     - julia ./test/runtests.jl
