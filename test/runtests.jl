@@ -1,8 +1,15 @@
 using TradeInstrument
 using Base.Test
 
-my_tests = ["io.jl", 
-            "blotter.jl"]
+my_tests = ["blotter.jl", 
+            "currencies.jl", 
+            "futures.jl", 
+            "io.jl", 
+            "ledger.jl", 
+            "notes.jl", 
+            "options.jl", 
+            "plots.jl", 
+            "stocks.jl"]
 
 print_with_color(:cyan, "Running tests: ") 
 println("")
