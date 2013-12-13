@@ -1,8 +1,8 @@
-using DataFrames, DataArrays, Datetime, TimeSeries, Winston
+using DataFrames, DataArrays, Datetime, TimeSeries # , Winston
 
 module FinancialBlotter 
 
-using DataFrames, DataArrays, Datetime, TimeSeries, Winston
+using DataFrames, DataArrays, Datetime, TimeSeries # , Winston
 
 export Stock,
        Blotter
