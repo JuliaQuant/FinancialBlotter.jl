@@ -1,4 +1,4 @@
-macro financialinstrument()
+macro financialblotter()
   println("")
   reload(Pkg.dir("FinancialInstrument/test/runtests.jl"))
 end

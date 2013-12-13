@@ -10,18 +10,7 @@ export Stock,
        yahoo_stock,
        fred,
 # future month abbreviations
-       F,
-       G,
-       H,
-       J,
-       K,
-       M,
-       N,
-       Q,
-       U,
-       V,
-       X,
-       Z,
+       F, G, H, J, K, M, N, Q, U, V, X, Z,
 # testsuite macro
        @financialblotter
 
