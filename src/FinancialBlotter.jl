@@ -23,7 +23,7 @@ export Stock,
        X,
        Z,
 # testsuite macro
-       @testfinancialblotter
+       @financialblotter
 
 include("io.jl")
 include("stocks.jl")
