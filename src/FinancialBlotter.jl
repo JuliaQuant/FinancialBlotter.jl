@@ -5,7 +5,7 @@ module FinancialBlotter
 using DataFrames, DataArrays, Datetime, TimeSeries # , Winston
 
 export Stock,
-       Blotter
+#       Blotter,    # not exported until it gets cleaned up
        yahoo,
        yahoo_stock,
        fred,
@@ -20,7 +20,7 @@ include("futures.jl")
 include("options.jl")
 include("currencies.jl")
 include("notes.jl")
-include("blotter.jl")
+#include("blotter.jl")
 include("ledger.jl")
 include("plots.jl")
 include("../test/testmacro.jl")

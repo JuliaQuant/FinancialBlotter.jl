@@ -1,8 +1,11 @@
-dgs = readtime(Pkg.dir("TradeInstrument/test/data/DGS10.csv"))
+using Base.Test
+using FinancialBlotter
+
+dgs = readtime(Pkg.dir("FinancialBlotter/test/data/DGS10.csv"))
 
 @assert 2.02  == dgs[13336,"VALUE"] 
 
-spx = readtime(Pkg.dir("TradeInstrument/test/data/spx.csv"))
+spx = readtime(Pkg.dir("FinancialBlotter/test/data/spx.csv"))
 
 @assert 92.4 == spx[6,"Adj Close"] 
 
