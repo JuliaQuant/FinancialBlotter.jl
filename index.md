@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: slate
 title: Blogging Like a Hacker
 ---
 
