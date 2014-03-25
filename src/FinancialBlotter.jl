@@ -1,12 +1,13 @@
-using TimeSeries 
+using TimeSeries, Datetime
 
 module FinancialBlotter 
 
-using TimeSeries 
+using TimeSeries, Datetime 
 
 export Stock,
        CUSIP, BloombergID, ReutersID, 
-       Currency, CurrencyPair
+       Currency, CurrencyPair,
+       Blotter
        # yahoo,
        # yahoo_stock,
        # fred,
@@ -19,7 +20,7 @@ include("stocks.jl")
 #include("futures.jl")
 #include("options.jl")
 #include("notes.jl")
-#include("blotter.jl")
+include("blotter.jl")
 #include("ledger.jl")
 #include("plots.jl")
 

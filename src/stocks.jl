@@ -9,8 +9,8 @@ type BloombergID <: AbstractFinancialID
     id::String
 end
 
-type ReutersID < :AbstractFinancialID
-    id::String
+type ReutersID <: AbstractFinancialID
+     id::String
 end
 
 type Stock <: AbstractStock
