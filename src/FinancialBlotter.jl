@@ -4,10 +4,11 @@ module FinancialBlotter
 
 using TimeSeries, Datetime 
 
-export Stock,
-       CUSIP, BloombergID, ReutersID, 
-       Currency, CurrencyPair,
-       Blotter, FinancialTimeSeries
+import Base: length, show, getindex
+
+export AbstractInstrument, Stock, Currency, CurrencyPair,
+       AbstractFinancialID, CUSIP, BloombergID, ReutersID,
+       Blotter, OrderBook, FinancialTimeSeries
        # yahoo,
        # yahoo_stock,
        # fred,
