@@ -1,12 +1,12 @@
 import Base: show, getindex, length
 
 #type Blotter #<: AbstractTimeArray
-type Blotter{T,N} #<: AbstractTimeArray
+type Blotter{T,N} <: AbstractTimeArray
 
     timestamp::Vector{Date{ISOCalendar}}
     values::Array{T,N}
     colnames::Vector{ASCIIString}
-
+#    timeseries::Stock
 
     function Blotter(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
         nrow, ncol = size(values, 1), size(values, 2)
@@ -28,59 +28,72 @@ Blotter(d::Vector{Date{ISOCalendar}}) = Blotter(d,zeros(length(d),2),["Qty","Fil
 
 ###### length ###################
 
-function length(b::Blotter)
-    length(b.timestamp)
-end
+# function length(b::Blotter)
+#     length(b.timestamp)
+# end
 
 ###### show #####################
  
-function show(io::IO, b::Blotter)
+
+function show(io::IO, ta::Blotter)
   # variables 
-  nrow          = size(b.values, 1)
-  ncol          = size(b.values, 2)
-  spacetime     = strwidth(string(b.timestamp[1])) + 3
-  firstcolwidth = strwidth(b.colnames[1])
+  nrow          = size(ta.values, 1)
+  ncol          = size(ta.values, 2)
+  intcatcher    = falses(ncol)
+  for c in 1:ncol
+      rowcheck =  trunc(ta.values[:,c]) - ta.values[:,c] .== 0
+      if sum(rowcheck) == length(rowcheck)
+          intcatcher[c] = true
+      end
+  end
+  spacetime     = strwidth(string(ta.timestamp[1])) + 3
+  firstcolwidth = strwidth(ta.colnames[1])
   colwidth      = Int[]
       for m in 1:ncol
-          push!(colwidth, max(strwidth(b.colnames[m]), strwidth(@sprintf("%.2f", maximum(b.values[:,m])))))
+          push!(colwidth, max(strwidth(ta.colnames[m]), strwidth(@sprintf("%.2f", maximum(ta.values[:,m])))))
       end
 
   # summary line
-  print(io,@sprintf("%dx%d %s %s to %s", nrow, ncol, typeof(b), string(b.timestamp[1]), string(b.timestamp[nrow])))
+  print(io,@sprintf("%dx%d %s %s to %s", nrow, ncol, typeof(ta), string(ta.timestamp[1]), string(ta.timestamp[nrow])))
   println(io,"")
   println(io,"")
 
   # row label line
-
-   print(io, ^(" ", spacetime), b.colnames[1], ^(" ", colwidth[1] + 2 -firstcolwidth))
+   print(io, ^(" ", spacetime), ta.colnames[1], ^(" ", colwidth[1] + 2 -firstcolwidth))
 
    for p in 2:length(colwidth)
-     print(io, b.colnames[p], ^(" ", colwidth[p] - strwidth(b.colnames[p]) + 2))
+     print(io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(ta.colnames[p]) + 2))
    end
    println(io,"")
  
   # timestamp and values line
     if nrow > 7
         for i in 1:4
-            print(io, b.timestamp[i], " | ")
+            print(io, ta.timestamp[i], " | ")
         for j in 1:ncol
-            print(io,rpad(round(b.values[i,j], 2), colwidth[j] + 2, " "))
+            intcatcher[j] ?
+            print(io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
+            print(io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
         end
         println(io,"")
         end
         println(io,'\u22EE')
         for i in nrow-3:nrow
-            print(io, b.timestamp[i], " | ")
+            print(io, ta.timestamp[i], " | ")
         for j in 1:ncol
-            print(io,rpad(round(b.values[i,j], 2), colwidth[j] + 2, " "))
+            intcatcher[j] ?
+            print(io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
+            print(io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
         end
         println(io,"")
         end
     else
         for i in 1:nrow
-            print(io, b.timestamp[i], " | ")
+            print(io, ta.timestamp[i], " | ")
         for j in 1:ncol
-            print(io,rpad(round(b.values[i,j], 2), colwidth[j] + 2, " "))
+            intcatcher[j] ?
+            print(io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
+            print(io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
         end
         println(io,"")
         end
@@ -146,23 +159,3 @@ end
 
 # day of week
 # getindex{T,N}(b::Blotter{T,N}, d::DAYOFWEEK) = b[dayofweek(b.timestamp) .== d]
-
-
-
-
-
-#    #function g(d, fm, to)
-#    function g(d)
-#      h = FramedPlot(title="Equity Curve")
-#  #    x = lterows(d, fm)   #fm
-#  #    x = gterows(d, to)   #to
-#      x = [0:size(d, 1)]
-#      y = equity(d["Close"])
-#      y[1] = 1.0
-#      pos = y .> 1  
-#      neg = y .<= 1  
-#      add(h, FillBetween(x[neg],y[neg],x,y,color=0x006bab5b))
-#      add(h, FillBetween(x[pos],y[pos],x,y,color=0x00d66661))
-#  #     add(h, Curve(y,x))
-#      return h
-#    end

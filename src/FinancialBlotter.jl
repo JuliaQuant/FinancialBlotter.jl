@@ -7,7 +7,7 @@ using TimeSeries, Datetime
 export Stock,
        CUSIP, BloombergID, ReutersID, 
        Currency, CurrencyPair,
-       Blotter
+       Blotter, FinancialTimeSeries
        # yahoo,
        # yahoo_stock,
        # fred,
@@ -21,6 +21,7 @@ include("stocks.jl")
 #include("options.jl")
 #include("notes.jl")
 include("blotter.jl")
+include("financialtimeseries.jl")
 #include("ledger.jl")
 #include("plots.jl")
 
