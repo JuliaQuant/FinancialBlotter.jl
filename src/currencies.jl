@@ -18,3 +18,11 @@ end
 function show(io::IO, c::CurrencyPair)
     print(io, @sprintf("%s/%s", string(c.baseside), string(c.quoteside)))
 end
+
+############ show #################
+
+const USD = Currency("USD")
+const GBP = Currency("GBP")
+const EUR = Currency("EUR")
+const AUD = Currency("AUD")
+const JPY = Currency("JPY")

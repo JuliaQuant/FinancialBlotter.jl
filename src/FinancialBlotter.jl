@@ -7,6 +7,7 @@ using TimeSeries, Datetime
 import Base: length, show, getindex
 
 export AbstractInstrument, Stock, Currency, CurrencyPair,
+       USD, EUR, GBP, AUD, JPY,
        AbstractFinancialID, CUSIP, BloombergID, ReutersID,
        Blotter, OrderBook, FinancialTimeSeries
        # yahoo,
