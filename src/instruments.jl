@@ -1,4 +1,5 @@
 abstract AbstractFinancialID
+abstract AbstractCurrency
 abstract AbstractInstrument
 
 type Ticker 
@@ -27,6 +28,15 @@ end
 
 Stock(ticker::Ticker, cusip::CUSIP) = Stock(ticker, cusip, USD, .01, 1)
 
+type Currency <: AbstractCurrency
+    origin::String
+end
+
+type CurrencyPair <: AbstractCurrency
+    baseside::Currency
+    quoteside::Currency
+end
+
 ############ show #################
 
 function show(io::IO, c::CUSIP)
@@ -52,3 +62,32 @@ function show(io::IO, s::Stock)
     println(io, @sprintf("tick:           %s", s.tick))
     println(io, @sprintf("multiplier:     %s", s.multiplier))
 end
+
+function show(io::IO, c::Currency)
+    print(io, @sprintf("%s", c.origin))
+end
+
+function show(io::IO, c::CurrencyPair)
+    print(io, @sprintf("%s/%s", string(c.baseside), string(c.quoteside)))
+end
+
+############ const ################
+
+const USD = Currency("USD")
+const GBP = Currency("GBP")
+const EUR = Currency("EUR")
+const AUD = Currency("AUD")
+const JPY = Currency("JPY")
+
+const F = "Jan"
+const G = "Feb"
+const H = "Mar"
+const J = "Apr"
+const K = "May"
+const M = "Jun"
+const N = "Jul"
+const Q = "Aug"
+const U = "Sep"
+const X = "Oct"
+const V = "Nov"
+const Z = "Dec"

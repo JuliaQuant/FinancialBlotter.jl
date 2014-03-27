@@ -6,25 +6,19 @@ using TimeSeries, Datetime
 
 import Base: length, show, getindex
 
-export AbstractInstrument, Stock, Currency, CurrencyPair,
-       USD, EUR, GBP, AUD, JPY,
-       AbstractFinancialID, Ticker, CUSIP, BloombergID, ReutersID,
-       Blotter, OrderBook, FinancialTimeSeries
-       # yahoo,
-       # yahoo_stock,
-       # fred,
-# future month abbreviations
-       # F, G, H, J, K, M, N, Q, U, V, X, Z,
+export AbstractInstrument, AbstractCurrency, AbstractFinancialID,
+       Stock, Currency, CurrencyPair,
+       Ticker, CUSIP, BloombergID, ReutersID,
+       Blotter, OrderBook, FinancialTimeSeries,
+       USD, EUR, GBP, AUD, JPY, F, G, H, J, K, M, N, Q, U, V, X, Z
+       # yahoo, fred
 
-#include("io.jl")
-include("currencies.jl")
-include("stocks.jl")
-#include("futures.jl")
-#include("options.jl")
-#include("notes.jl")
+include("instruments.jl")
+include("orderbook.jl")
+include("fillsimulator.jl")
 include("blotter.jl")
 include("financialtimeseries.jl")
-#include("ledger.jl")
+#include("readwrite.jl")
 #include("plots.jl")
 
 end 
