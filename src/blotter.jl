@@ -1,7 +1,7 @@
 import Base: show, getindex, length
 
-#type Blotter #<: AbstractTimeArray
-type Blotter{T,N} <: AbstractTimeArray
+#type Blotter #<: AbstractTimeSeries
+type Blotter{T,N} <: AbstractTimeSeries
 
     timestamp::Vector{Date{ISOCalendar}}
     values::Array{T,N}

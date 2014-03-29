@@ -1,6 +1,6 @@
 import Base: show, getindex, length
 
-type OrderBook{T,N} <: AbstractTimeArray
+type OrderBook{T,N} <: AbstractTimeSeries
 
     timestamp::Vector{Date{ISOCalendar}}
     values::Array{T,N}

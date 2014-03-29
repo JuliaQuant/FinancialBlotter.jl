@@ -18,16 +18,6 @@ type ReutersID <: AbstractFinancialID
      id::String
 end
 
-type Stock <: AbstractInstrument
-    ticker::Ticker
-    cusip::CUSIP
-    currency::Currency
-    tick::Float64
-    multiplier::Float64
-end
-
-Stock(ticker::Ticker, cusip::CUSIP) = Stock(ticker, cusip, USD, .01, 1)
-
 type Currency <: AbstractCurrency
     origin::String
 end
@@ -37,6 +27,19 @@ type CurrencyPair <: AbstractCurrency
     quoteside::Currency
 end
 
+type Stock <: AbstractInstrument
+    ticker::Ticker
+    #cusip::CUSIP
+#    id::Dict{typeof(AbstractInstrument),AbstractInstrument}
+#    id::Dict(typeof(AbstractFinancialID)=>AbstractFinancialID)[]
+    currency::Currency
+    tick::Float64
+    multiplier::Float64
+end
+
+#Stock(ticker::Ticker) = Stock(ticker, [CUSIP=>CUSIP("123")], USD, .01, 1)
+Stock(ticker::Ticker) = Stock(ticker, USD, .01, 1)
+
 ############ show #################
 
 function show(io::IO, c::CUSIP)
@@ -44,11 +47,11 @@ function show(io::IO, c::CUSIP)
 end
 
 function show(io::IO, c::ReutersID)
-    print(io, @sprintf("%s: %s", typeof(c), c.id))
+    print(io, @sprintf("%s", c.id))
 end
 
 function show(io::IO, c::BloombergID)
-    print(io, @sprintf("%s: %s", typeof(c), c.id))
+    print(io, @sprintf("%s", c.id))
 end
 
 function show(io::IO, t::Ticker)

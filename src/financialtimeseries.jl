@@ -1,7 +1,7 @@
 import Base: show, getindex, length
 
 
-type FinancialTimeSeries{T<:Float64,N} <: AbstractTimeArray
+type FinancialTimeSeries{T<:Float64,N} <: AbstractTimeSeries
 
     timestamp::Vector{Date{ISOCalendar}}
     values::Array{T,N}
