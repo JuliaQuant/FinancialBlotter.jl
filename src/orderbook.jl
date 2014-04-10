@@ -1,13 +1,15 @@
 import Base: show, getindex, length
 
-type OrderBook{T,N} <: AbstractTimeSeries
+#type OrderBook{T,N} <: AbstractTimeSeries
+type OrderBook <: AbstractTimeSeries
 
     timestamp::Vector{Date{ISOCalendar}}
-    values::Array{T,N}
+    values::Matrix{ASCIIString}
     colnames::Vector{ASCIIString}
 #    timeseries::Stock
 
-    function OrderBook(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
+    #function OrderBook(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
+    function OrderBook(timestamp::Vector{Date{ISOCalendar}}, values::Matrix{ASCIIString}, colnames::Vector{ASCIIString})
         nrow, ncol = size(values, 1), size(values, 2)
         nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
         ncol != size(colnames,1) ? error("column names must match width of array"):
@@ -20,10 +22,17 @@ type OrderBook{T,N} <: AbstractTimeSeries
 #    OrderBook(timestamp::Vector{Date{ISOCalendar}}) = OrderBook(timestamp, zeros(length(timestamp), 2), ["Qty","Fill"])
 end
 
-OrderBook{T,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}) = OrderBook{T,N}(d,v,c)
-OrderBook{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1}) = OrderBook([d], v, c)
-OrderBook(d::Vector{Date{ISOCalendar}}) = OrderBook(d,zeros(length(d),2),["Qty","Fill"])
-
+#OrderBook{T,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}) = OrderBook{T,N}(d,v,c)
+#OrderBook(d::Vector{Date{ISOCalendar}}, v::Matrix{ASCIIString}, c::Vector{ASCIIString}) = OrderBook(d,v,c)
+#OrderBook{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1}) = OrderBook([d], v, c)
+OrderBook(d::Date{ISOCalendar}, v::Matrix{ASCIIString}, c::Vector{ASCIIString}) = OrderBook([d], v, c)
+#OrderBook(d::Vector{Date{ISOCalendar}}) = OrderBook(d,zeros(length(d),2),["Qty","Fill"])
+#OrderBook(d::Vector{Date{ISOCalendar}}) = OrderBook(d,string(zeros(length(d),3)),["Qty","Fill", "Status"])
+initialdate = [date(1980,1,3), date(1980,1,12)]
+initialvals = ["100" "123.12" "short" "market" "open" "" "2.33";
+               "100" "120.12" "cover" "market" "pending" "" "2.33"]
+initialcols = ["Qty","Price","Side","Order Type", "Status", "Status Time", "Fees"]
+OrderBook() = OrderBook(initialdate, initialvals, initialcols) 
 
 ###### length ###################
 
@@ -32,24 +41,16 @@ OrderBook(d::Vector{Date{ISOCalendar}}) = OrderBook(d,zeros(length(d),2),["Qty",
 # end
 
 ###### show #####################
- 
 
 function show(io::IO, ta::OrderBook)
   # variables 
   nrow          = size(ta.values, 1)
   ncol          = size(ta.values, 2)
-  intcatcher    = falses(ncol)
-  for c in 1:ncol
-      rowcheck =  trunc(ta.values[:,c]) - ta.values[:,c] .== 0
-      if sum(rowcheck) == length(rowcheck)
-          intcatcher[c] = true
-      end
-  end
   spacetime     = strwidth(string(ta.timestamp[1])) + 3
   firstcolwidth = strwidth(ta.colnames[1])
   colwidth      = Int[]
       for m in 1:ncol
-          push!(colwidth, max(strwidth(ta.colnames[m]), strwidth(@sprintf("%.2f", maximum(ta.values[:,m])))))
+          push!(colwidth, max(strwidth(ta.colnames[m]), maximum([strwidth(t) for t in ta.values[:,m]])))
       end
 
   # summary line
@@ -63,40 +64,42 @@ function show(io::IO, ta::OrderBook)
    for p in 2:length(colwidth)
      print(io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(ta.colnames[p]) + 2))
    end
-   println(io,"")
+   println(io, "")
  
   # timestamp and values line
-    if nrow > 7
-        for i in 1:4
-            print(io, ta.timestamp[i], " | ")
-        for j in 1:ncol
-            intcatcher[j] ?
-            print(io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
-            print(io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
-        end
-        println(io,"")
-        end
-        println(io,'\u22EE')
-        for i in nrow-3:nrow
-            print(io, ta.timestamp[i], " | ")
-        for j in 1:ncol
-            intcatcher[j] ?
-            print(io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
-            print(io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
-        end
-        println(io,"")
-        end
-    else
+   #  if nrow > 7
+   #      for i in 1:4
+   #          print(io, ta.timestamp[i], " | ")
+   #      for j in 1:ncol
+   #          print(io, rpad(ta.values[i,j], colwidth[j] + 2, " "))
+   #      end
+   #      println(io,"")
+   #      end
+   #      println(io,'\u22EE')
+   #      for i in nrow-3:nrow
+   #          print(io, ta.timestamp[i], " | ")
+   #      for j in 1:ncol
+   #          print(io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) 
+   #      end
+   #      println(io,"")
+   #      end
+   #  else
         for i in 1:nrow
             print(io, ta.timestamp[i], " | ")
         for j in 1:ncol
-            intcatcher[j] ?
-            print(io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
-            print(io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
+            ta.values[i,j] == "open" || ta.values[i,j] == "long" ?
+            #ta.values[i,j] == "open" ?
+            print_with_color(:green, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
+            ta.values[i,j] == "closed" || ta.values[i,j] == "short" ?
+            #ta.values[i,j] == "closed" ?
+            print_with_color(:red, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
+            ta.values[i,j] == "pending" || ta.values[i,j] == "cover" || ta.values[i,j] == "sell" ?
+            print_with_color(:yellow, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
+            print_with_color(:blue, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) 
         end
         println(io,"")
         end
-    end
+   # end
 end
 
 ###### getindex #################
