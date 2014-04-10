@@ -29,8 +29,9 @@ OrderBook(d::Date{ISOCalendar}, v::Matrix{ASCIIString}, c::Vector{ASCIIString}) 
 #OrderBook(d::Vector{Date{ISOCalendar}}) = OrderBook(d,zeros(length(d),2),["Qty","Fill"])
 #OrderBook(d::Vector{Date{ISOCalendar}}) = OrderBook(d,string(zeros(length(d),3)),["Qty","Fill", "Status"])
 initialdate = [date(1980,1,3), date(1980,1,12)]
-initialvals = ["100" "123.12" "short" "market" "open" "" "2.33";
-               "100" "120.12" "cover" "market" "pending" "" "2.33"]
+initialtime = string(datetime(1980,1,3,12,15,12,0,EST))
+initialvals = ["100" "123.12" "long" "limit" "closed" initialtime "2.33";
+               "100" "128.12" "sell" "market" "pending" "" "2.33"]
 initialcols = ["Qty","Price","Side","Order Type", "Status", "Status Time", "Fees"]
 OrderBook() = OrderBook(initialdate, initialvals, initialcols) 
 
