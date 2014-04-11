@@ -12,7 +12,8 @@ export AbstractInstrument, AbstractCurrency, AbstractFinancialID,
        Blotter, OrderBook, FinancialTimeSeries,
        USD, EUR, GBP, AUD, JPY, F, G, H, J, K, M, N, Q, U, V, X, Z,  
        orderbookcolnames, orderbookbidvalues, orderbookoffervalues, orderbooksellvalues, orderbookcovervalues, 
-       parsedatetime
+       addorder, fillorderbook,
+       merge, parsedatetime
        # yahoo, fred
 
 include("instruments.jl")
