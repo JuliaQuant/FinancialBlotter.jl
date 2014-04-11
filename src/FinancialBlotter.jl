@@ -10,7 +10,8 @@ export AbstractInstrument, AbstractCurrency, AbstractFinancialID,
        Stock, Currency, CurrencyPair,
        Ticker, CUSIP, BloombergID, ReutersID,
        Blotter, OrderBook, FinancialTimeSeries,
-       USD, EUR, GBP, AUD, JPY, F, G, H, J, K, M, N, Q, U, V, X, Z,
+       USD, EUR, GBP, AUD, JPY, F, G, H, J, K, M, N, Q, U, V, X, Z,  
+       orderbookcolnames, orderbookbidvalues, orderbookoffervalues, orderbooksellvalues, orderbookcovervalues, 
        parsedatetime
        # yahoo, fred
 
