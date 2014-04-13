@@ -3,12 +3,14 @@ import Base: show, getindex, length
 #type Blotter #<: AbstractTimeSeries
 type Blotter{T,N} <: AbstractTimeSeries
 
-    timestamp::Vector{Date{ISOCalendar}}
+    #timestamp::Vector{Date{ISOCalendar}}
+    timestamp::Vector{DateTime{ISOCalendar,UTC}}
     values::Array{T,N}
     colnames::Vector{ASCIIString}
 #    timeseries::Stock
 
-    function Blotter(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
+    #function Blotter(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
+    function Blotter(timestamp::Vector{DateTime{ISOCalendar,UTC}}, values::Array{T,N}, colnames::Vector{ASCIIString})
         nrow, ncol = size(values, 1), size(values, 2)
         nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
         ncol != size(colnames,1) ? error("column names must match width of array"):
@@ -18,13 +20,19 @@ type Blotter{T,N} <: AbstractTimeSeries
         new(flipud(timestamp), flipud(values), colnames):
         new(timestamp, values, colnames)
     end
-#    Blotter(timestamp::Vector{Date{ISOCalendar}}) = Blotter(timestamp, zeros(length(timestamp), 2), ["Qty","Fill"])
 end
 
-Blotter{T,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}) = Blotter{T,N}(d,v,c)
-Blotter{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1}) = Blotter([d], v, c)
-Blotter(d::Vector{Date{ISOCalendar}}) = Blotter(d,zeros(length(d),2),["Qty","Fill"])
+# Blotter{T,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}) = Blotter{T,N}(d,v,c)
+# Blotter{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1}) = Blotter([d], v, c)
+# Blotter(d::Vector{Date{ISOCalendar}}) = Blotter(d,zeros(length(d),2),["Qty","Fill"])
 
+Blotter{T,N}(d::Vector{DateTime{ISOCalendar,UTC}}, v::Array{T,N}, c::Vector{ASCIIString}) = Blotter{T,N}(d,v,c)
+Blotter{T,N}(d::DateTime{ISOCalendar,UTC}, v::Array{T,N}, c::Array{ASCIIString,1}) = Blotter([d], v, c)
+Blotter(d::Vector{DateTime{ISOCalendar,UTC}}) = Blotter(d,zeros(length(d),2),["Qty","Fill"])
+
+const blottercolnames = ["Qty", "Fill"]
+
+Blotter() = Blotter([datetime(1795,10,31)], [0 0], blottercolnames)
 
 ###### length ###################
 
@@ -130,7 +138,8 @@ function getindex(b::Blotter, args::ASCIIString...)
 end
 
 # single date
-function getindex(b::Blotter, d::Date{ISOCalendar})
+#function getindex(b::Blotter, d::Date{ISOCalendar})
+function getindex(b::Blotter, d::DateTime{ISOCalendar, UTC})
    for i in 1:length(b)
      if [d] == b[i].timestamp 
        return b[i] 
@@ -141,7 +150,8 @@ function getindex(b::Blotter, d::Date{ISOCalendar})
  end
  
 # range of dates
-function getindex(b::Blotter, dates::Array{Date{ISOCalendar},1})
+#function getindex(b::Blotter, dates::Array{Date{ISOCalendar},1})
+function getindex(b::Blotter, dates::Array{DateTime{ISOCalendar,UTC},1})
   counter = Int[]
 #  counter = int(zeros(length(dates)))
   for i in 1:length(dates)
@@ -159,3 +169,4 @@ end
 
 # day of week
 # getindex{T,N}(b::Blotter{T,N}, d::DAYOFWEEK) = b[dayofweek(b.timestamp) .== d]
+

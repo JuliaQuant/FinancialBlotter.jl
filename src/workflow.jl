@@ -33,3 +33,19 @@ ob         = merge(entries,exits)
 #             add timestamp, qty and price to blotter
 # signal array sa offer
 
+-> find row where status == open
+-> try to fill it (test conditions)
+    -> success without edge cases, then
+        -> change status to "closed"
+        -> fill status time with date and midnight time
+        -> change status to "closed"
+        -> change status of next row to "open"
+        -> add row to blotter object
+    -> success with edge cases, then
+        -> same as without edge cases, but price must be adjusted to open - tick adjustment
+    -> no success 
+        -> keep trying until sell pending order, and then fill out both with "not filled" and open the next pending
+
+-> objects returned include modified order book and a blotter
+
+

@@ -27,24 +27,26 @@ end
 OrderBook(t::Date{ISOCalendar}, v::Matrix{ASCIIString}, c::Vector{ASCIIString}) = OrderBook([t], v, c)
 
 
-const orderbookbidvalues   = ["100" "123.12" "bid" "limit" "open" "" "2.33"]
-const orderbookoffervalues = ["100" "123.12" "bid" "limit" "open" "" "2.33"]
-const orderbooksellvalues  = ["100" "123.12" "sell" "market" "open" "" "2.33"]
-const orderbookcovervalues = ["100" "123.12" "sell" "market" "open" "" "2.33"]
+const orderbookbidvalues   = ["100" "123.12" "bid" "limit" "pending" "" "2.33"]
+const orderbookoffervalues = ["100" "123.12" "bid" "limit" "pending" "" "2.33"]
+const orderbooksellvalues  = ["100" "123.12" "sell" "market" "pending" "" "2.33"]
+const orderbookcovervalues = ["100" "123.12" "sell" "market" "pending" "" "2.33"]
 const orderbookcolnames    = ["Qty","Price","Side","Order", "Status", "Status Time", "Fees"]
 #OrderBook() = OrderBook([datetime(1980,1,3)], orderbookbidvalues, orderbookcolnames) 
 OrderBook() = OrderBook([date(1980,1,3)], orderbookbidvalues, orderbookcolnames) 
-
-###### addorder #################
-
-function addorder()
-end
 
 ###### length ###################
 
 function length(b::OrderBook)
     length(b.timestamp)
 end
+
+###### iterator protocol #########
+
+# start(ob::OrderBook)   = 1
+# next(ob::OrderBook,i)  = ((ob.timestamp[i],ob.values[i,:]),i+1)
+# done(ob::OrderBook,i)  = (i > length(ob))
+# isempty(ob::OrderBook) = (length(ob) == 0)
 
 ###### show #####################
 
@@ -79,11 +81,11 @@ function show(io::IO, ta::OrderBook)
          for i in 1:4
              print(io, ta.timestamp[i], " | ")
          for j in 1:ncol
-            ta.values[i,j] == "open" || ta.values[i,j] == "bid" ?
+            ta.values[i,j] == "open" || ta.values[i,j] == "bid" || ta.values[i,j] == "cover" ?
               print_with_color(:green, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
-            ta.values[i,j] == "closed" || ta.values[i,j] == "offer" ?
+            ta.values[i,j] == "closed" || ta.values[i,j] == "offer" || ta.values[i,j] == "sell" ?
               print_with_color(:red, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
-            ta.values[i,j] == "cover" || ta.values[i,j] == "sell" ?
+            ta.values[i,j] == "pending" ? 
               print_with_color(:yellow, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
             print_with_color(:blue, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) 
          end
@@ -93,11 +95,11 @@ function show(io::IO, ta::OrderBook)
          for i in nrow-3:nrow
              print(io, ta.timestamp[i], " | ")
          for j in 1:ncol
-            ta.values[i,j] == "open" || ta.values[i,j] == "bid" ?
+            ta.values[i,j] == "open" || ta.values[i,j] == "bid" || ta.values[i,j] == "cover" ?
               print_with_color(:green, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
-            ta.values[i,j] == "closed" || ta.values[i,j] == "offer" ?
+            ta.values[i,j] == "closed" || ta.values[i,j] == "offer" || ta.values[i,j] == "sell" ?
               print_with_color(:red, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
-            ta.values[i,j] == "cover" || ta.values[i,j] == "sell" ?
+            ta.values[i,j] == "pending" ? 
               print_with_color(:yellow, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
             print_with_color(:blue, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) 
          end
@@ -107,11 +109,11 @@ function show(io::IO, ta::OrderBook)
         for i in 1:nrow
             print(io, ta.timestamp[i], " | ")
         for j in 1:ncol
-            ta.values[i,j] == "open" || ta.values[i,j] == "bid" ?
+            ta.values[i,j] == "open" || ta.values[i,j] == "bid" || ta.values[i,j] == "cover" ?
               print_with_color(:green, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
-            ta.values[i,j] == "closed" || ta.values[i,j] == "offer" ?
+            ta.values[i,j] == "closed" || ta.values[i,j] == "offer" || ta.values[i,j] == "sell" ?
               print_with_color(:red, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
-            ta.values[i,j] == "cover" || ta.values[i,j] == "sell" ?
+            ta.values[i,j] == "pending" ? 
               print_with_color(:yellow, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
             print_with_color(:blue, io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) 
         end
@@ -182,12 +184,6 @@ end
 # day of week
 # getindex{T,N}(b::OrderBook{T,N}, d::DAYOFWEEK) = b[dayofweek(b.timestamp) .== d]
 
-# addorder
-
-function addorder(ob::OrderBook, entry::OrderBook)
-    OrderBook(vcat(ob.timestamp, entry.timestamp), vcat(ob.values, entry.values), orderbookcolnames)
-end
-
 # merge
 
 function merge(ob1::OrderBook, ob2::OrderBook)
@@ -203,31 +199,3 @@ function merge(ob1::OrderBook, ob2::OrderBook)
     OrderBook(dt, vals, orderbookcolnames)
 end
 
-# fill order book from a signal -- simple long/sell scenario
-
-function fillorderbook(s::TimeArray{Bool,1}, timeseries::TimeArray{Float64,2})
-
-    op, hi, lo, cl = timeseries["Open"], timeseries["High"], timeseries["Low"], timeseries["Close"]
-
-    tt = lag(s)              # 495 row of bools, the next day
-    t  = discretesignal(tt)  # 78 rows of first true and first false, as floats though
-
-# entries day after signal, with a bid of signal day's mid price
-    entrydates = findwhen(t.==1)
-    entries    = OrderBook(entrydates, repmat(orderbookbidvalues, length(entrydates)), orderbookcolnames)
-    bidsignal  = findwhen(discretesignal(s).==1)
-    entryprice = (lo[bidsignal] .+ (hi[bidsignal] .- lo[bidsignal])/2).values
-    for i in 1:length(entries)
-        entries.values[i,2] = string(round(entryprice[i],2))
-    end
-
-# exits day after signal, with .1 slippage
-    exitdates  = findwhen(t.==0)
-    exits      = OrderBook(exitdates, repmat(orderbooksellvalues, length(exitdates)), orderbookcolnames)
-    exitprice  = op[exitdates].values .+ .1
-    for i in 1:length(exits)
-        exits.values[i,2] = string(round(exitprice[i],2))
-    end
-
-    merge(entries,exits)
-end
