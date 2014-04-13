@@ -41,14 +41,10 @@ function fill!(ob::OrderBook, timeseries::TimeArray{Float64,2}; slippage = .00)
 
     #for d in 1:length(ob) - 1
     for d in 1:2:length(ob)-1
-    #for d in 1:13
         if findfirst(ob.values .== "open") != 0                  # find row that is open and store date
             idx    = findfirst(ob.values .== "open") - 4length(ob)
             dt     = ob.timestamp[idx]
-            #nextdt = ob[dt:ob.timestamp[end]][2].timestamp[1]    # next observation - very hacked up
             nextdt = ob[dt:ob.timestamp[end]][2].timestamp[1] - days(1)    # just before the next obs
-            #dtrow  = ob[dt]  
-            #nxrow  = ob[nextdt]
             low    = timeseries[dt:nextdt]["Low"]
             high   = timeseries[dt:nextdt]["High"]
         end
@@ -57,25 +53,26 @@ function fill!(ob::OrderBook, timeseries::TimeArray{Float64,2}; slippage = .00)
         while v < length(timeseries[dt:nextdt])
             if  low.values[v] + slippage < float(ob.values[d,2]) < high.values[v] - slippage # bid is inside market, sell fits here too
                 ob.values[d,5]   = "closed"
-                ob.values[d,6]   = string(datetime(low[v].timestamp[1]))
+                #ob.values[d,6]   = string(datetime(low[v].timestamp[1]))
+                #ob.values[d+1,6] = string(datetime(ob[d+1].timestamp[1]))
+                da               = split(string(low[v].timestamp[1]), "-")
+                danext           = split(string(ob[d+1].timestamp[1]), "-")
+                ob.values[d,6]   = string(datetime(int(da[1]),int(da[2]),int(da[3]),23,59,59,59))
+                ob.values[d+1,6] = string(datetime(int(danext[1]),int(danext[2]),int(danext[3]),23,59,59,59))
                 ob.values[d+1,5] = "closed"
-                ob.values[d+1,6] = string(datetime(ob[d+1].timestamp[1]))
                 ob.values[d+2,5] = "open"
-                # dtrow.values[d,5] = "closed"
-                # nxrow.values[d,5] = "open"
-                # dtrow.values[d,6] = string(datetime(low[v].timestamp[1]))
                 break
             elseif float(ob.values[d,2])  > high.values[v] - slippage # bid is above market
                 ob.values[d,2]   = string(high.values[v] - slippage)
                 ob.values[d,5]   = "closed"
-                ob.values[d,6]   = string(datetime(low[v].timestamp[1]))
+                #ob.values[d,6]   = string(datetime(low[v].timestamp[1]))
+                #ob.values[d+1,6] = string(datetime(ob[d+1].timestamp[1]))
+                da               = split(string(low[v].timestamp[1]), "-")
+                danext           = split(string(ob[d+1].timestamp[1]), "-")
+                ob.values[d,6]   = string(datetime(int(da[1]),int(da[2]),int(da[3]),23,59,59,59))
+                ob.values[d+1,6] = string(datetime(int(danext[1]),int(danext[2]),int(danext[3]),23,59,59,59))
                 ob.values[d+1,5] = "closed"
-                ob.values[d+1,6] = string(datetime(ob[d+1].timestamp[1]))
                 ob.values[d+2,5] = "open"
-                # dtrow.values[d,2] = string(high.values[v] - slippage)
-                # dtrow.values[d,5] = "closed"
-                # dtrow.values[d,6] = string(datetime(low[v].timestamp[1]))
-                # nxrow.values[d,5] = "open"
                 break
             else  # bid is not filled
                 #if  v <  length(timeseries[dt:nextdt]) - 1
@@ -90,9 +87,37 @@ function fill!(ob::OrderBook, timeseries::TimeArray{Float64,2}; slippage = .00)
             end
         end
     end
-    # need Blotter method dispatched on OrderBook
-    #b = Blotter(ob) 
-    ob
+    # last row processing outside the loop above
+        w          = 1
+        x          = length(ob) 
+        lastwindow = ob.timestamp[x]:timeseries.timestamp[end]
+        lo         = timeseries[lastwindow]["Low"]
+        hi         = timeseries[lastwindow]["High"]
+        #while w <= length(timeseries[ob.timestamp[x]:timeseries.timestamp[end]])
+        while w <= length(timeseries[lastwindow])
+            if  lo.values[w] + slippage < float(ob.values[x,2]) < hi.values[w] - slippage # bid is inside market, sell fits here too
+                ob.values[x,5]   = "closed"
+                dal              = split(string(lo[w].timestamp[1]), "-")
+                ob.values[x,6]   = string(datetime(int(dal[1]),int(dal[2]),int(dal[3]),23,59,59,59))
+                break
+            elseif float(ob.values[x,2])  > hi.values[w] - slippage # bid is above market
+                ob.values[x,2]   = string(high.values[w] - slippage)
+                ob.values[x,5]   = "closed"
+                dal              = split(string(lo[w].timestamp[1]), "-")
+                ob.values[x,6]   = string(datetime(int(dal[1]),int(dal[2]),int(dal[3]),23,59,59,59))
+                break
+            else  # bid is not filled
+                #if  v <  length(timeseries[dt:nextdt]) - 1
+                if  w < 6 
+                    w += 1  
+                else
+                    ob.values[x,5]   = "not filled"
+                    break
+                end
+            end
+        end
+    b = Blotter(ob) 
+    b,ob
 end
 
 
