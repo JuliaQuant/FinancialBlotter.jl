@@ -98,10 +98,10 @@ function show(io::IO, ta::Blotter)
   println(io,"")
 
   # row label line
-   print(io, ^(" ", spacetime), ta.colnames[1], ^(" ", colwidth[1] + 2 -firstcolwidth))
+   print_with_color(:magenta, io, ^(" ", spacetime), ta.colnames[1], ^(" ", colwidth[1] + 2 -firstcolwidth))
 
    for p in 2:length(colwidth)
-     print(io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(ta.colnames[p]) + 2))
+     print_with_color(:magenta, io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(ta.colnames[p]) + 2))
    end
    println(io,"")
  
@@ -110,9 +110,12 @@ function show(io::IO, ta::Blotter)
         for i in 1:4
             print(io, ta.timestamp[i], " | ")
         for j in 1:ncol
-            intcatcher[j] ?
-            print(io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
-            print(io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
+            intcatcher[j] && ta.values[i,j] > 0?
+            print_with_color(:green, io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
+#            print_with_color(:green, io, lpad(rpad(iround(ta.values[i,j]), colwidth[j] + 2, " "), " ")) :
+            intcatcher[j] && ta.values[i,j] < 0 ?
+            print_with_color(:red, io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
+            print_with_color(:blue, io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
         end
         println(io,"")
         end
@@ -120,9 +123,14 @@ function show(io::IO, ta::Blotter)
         for i in nrow-3:nrow
             print(io, ta.timestamp[i], " | ")
         for j in 1:ncol
-            intcatcher[j] ?
-            print(io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
-            print(io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
+            intcatcher[j] && ta.values[i,j] > 0?
+            print_with_color(:green, io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
+            intcatcher[j] && ta.values[i,j] < 0 ?
+            print_with_color(:red, io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
+            print_with_color(:blue, io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
+            # intcatcher[j] ?
+            # print(io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
+            # print(io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
         end
         println(io,"")
         end
