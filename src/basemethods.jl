@@ -27,7 +27,7 @@ function fill!(s::TimeArray{Bool,1}, timeseries::TimeArray{Float64,2})
 # exits day after signal, with .1 slippage
     exitdates  = findwhen(t.==0)
     exits      = OrderBook(exitdates, repmat(orderbooksellvalues, length(exitdates)), orderbookcolnames)
-    exitprice  = op[exitdates].values .+ .1
+    exitprice  = op[exitdates].values .+ .1  # slippage should NOT be here but in the fill algo below
     for i in 1:length(exits)
         exits.values[i,2] = string(round(exitprice[i],2))
     end
@@ -36,20 +36,6 @@ function fill!(s::TimeArray{Bool,1}, timeseries::TimeArray{Float64,2})
     res.values[1,5] = "open"
     res
 end
-
-###### -> find row where status == open
-###### -> try to fill it (test conditions)
-######     -> success without edge cases, then
-######         -> change status to "closed"
-######         -> fill status time with date and midnight time
-######         -> change status of next row to "open"
-######         -> add row to blotter object
-######     -> success with edge cases, then
-######         -> same as without edge cases, but price must be adjusted to open - tick adjustment
-######     -> no success 
-######         -> keep trying until sell pending order, and then fill out both with "not filled" and open the next pending
-###### 
-###### -> objects returned include modified order book and a blotter
 
 function fill!(ob::OrderBook, timeseries::TimeArray{Float64,2}; slippage = .00)
 
@@ -104,6 +90,8 @@ function fill!(ob::OrderBook, timeseries::TimeArray{Float64,2}; slippage = .00)
             end
         end
     end
+    # need Blotter method dispatched on OrderBook
+    #b = Blotter(ob) 
     ob
 end
 

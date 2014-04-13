@@ -1,16 +1,22 @@
 import Base: show, getindex, length
 
-#type Blotter #<: AbstractTimeSeries
-type Blotter{T,N} <: AbstractTimeSeries
+type Blotter #<: AbstractTimeSeries
+#type Blotter{T<:Offsets} #<: AbstractTimeSeries
+#type Blotter{T,N} <: AbstractTimeSeries
 
     #timestamp::Vector{Date{ISOCalendar}}
     timestamp::Vector{DateTime{ISOCalendar,UTC}}
-    values::Array{T,N}
+#    timestamp::Vector{DateTime{ISOCalendar,T}}
+    #values::Array{T,N}
+    values::Matrix{Float64}
     colnames::Vector{ASCIIString}
 #    timeseries::Stock
 
     #function Blotter(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
-    function Blotter(timestamp::Vector{DateTime{ISOCalendar,UTC}}, values::Array{T,N}, colnames::Vector{ASCIIString})
+    #function Blotter(timestamp::Vector{DateTime{ISOCalendar,UTC}}, values::Array{T,N}, colnames::Vector{ASCIIString})
+    #function Blotter(timestamp::Vector{DateTime{ISOCalendar,UTC}}, values::Matrix{Float64}, colnames::Vector{ASCIIString})
+    #function Blotter{T<:Offsets}(timestamp::Vector{DateTime{ISOCalendar,T}}, values::Matrix{Float64}, colnames::Vector{ASCIIString})
+    function Blotter(timestamp::Vector{DateTime{ISOCalendar,UTC}}, values::Matrix{Float64}, colnames::Vector{ASCIIString})
         nrow, ncol = size(values, 1), size(values, 2)
         nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
         ncol != size(colnames,1) ? error("column names must match width of array"):
@@ -26,13 +32,38 @@ end
 # Blotter{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1}) = Blotter([d], v, c)
 # Blotter(d::Vector{Date{ISOCalendar}}) = Blotter(d,zeros(length(d),2),["Qty","Fill"])
 
-Blotter{T,N}(d::Vector{DateTime{ISOCalendar,UTC}}, v::Array{T,N}, c::Vector{ASCIIString}) = Blotter{T,N}(d,v,c)
-Blotter{T,N}(d::DateTime{ISOCalendar,UTC}, v::Array{T,N}, c::Array{ASCIIString,1}) = Blotter([d], v, c)
-Blotter(d::Vector{DateTime{ISOCalendar,UTC}}) = Blotter(d,zeros(length(d),2),["Qty","Fill"])
+#Blotter{T,N}(d::Vector{DateTime{ISOCalendar,UTC}}, v::Array{T,N}, c::Vector{ASCIIString}) = Blotter{T,N}(d,v,c)
+# Blotter(d::Vector{DateTime{ISOCalendar,UTC}}, v::Matrix{Float64}, c::Vector{ASCIIString}) = Blotter(d,v,c)
+# Blotter(d::Vector{DateTime{ISOCalendar,UTC}}, v::Matrix{Float64}, c::Vector{ASCIIString}) = Blotter(d,v,c)
+# from single date
+#Blotter(d::DateTime{ISOCalendar,UTC}, v::Matrix{Float64}, c::Array{ASCIIString,1}) = Blotter([d], v, c)
+#Blotter{T}(d::Vector{DateTime{ISOCalendar,T}}, v::Matrix{Float64}, c::Vector{ASCIIString}) = Blotter(d,v,c)
+
+# Blotter(d::Vector{DateTime{ISOCalendar,UTC}}) = Blotter(d,zeros(length(d),2),["Qty","Fill"])
 
 const blottercolnames = ["Qty", "Fill"]
 
-Blotter() = Blotter([datetime(1795,10,31)], [0 0], blottercolnames)
+Blotter() = Blotter([datetime(1795,10,31)], [0. 0], blottercolnames)
+
+function Blotter(ob::OrderBook) 
+    counter = Int[]
+    for b in 1:length(ob)
+        if ob[b].values[5] == "closed"
+            push!(counter,b)
+        end
+    end
+
+    dstring = DateTime{ISOCalendar,UTC}[parsedatetime(ob[counter].values[d,6]) for d in 1:length(ob[counter])]
+
+    vals = float(ob[counter].values[:,1:2])
+    for s in 1:size(vals,1)
+        if ob[counter].values[s,3] == "sell" || ob[counter].values[s,3] == "offer"
+           vals[s,1] = flipsign(vals[s,1],-1) 
+        end
+    end
+
+    Blotter(dstring, vals, blottercolnames)
+end
 
 ###### length ###################
 
