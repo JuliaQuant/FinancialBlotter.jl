@@ -7,6 +7,8 @@ immutable Trade
     timeseries::FinancialTimeSeries
     #function Trade(start::DateTime{ISOCalendar,UTC}, finish::DateTime{ISOCalendar,UTC}, open::Float64, close::Float64, quantity::Int, timeseries::FinancialTimeSeries)
     function Trade(start, finish, open, close, quantity, timeseries)
+        timeseries.timestamp[1] > date(start) || timeseries.timestamp[end] < date(finish) ?
+        error("timeseries doesn't match trade date range") :
         new(start, finish, open, close, quantity, timeseries[date(start):date(finish)])
     end
 end
