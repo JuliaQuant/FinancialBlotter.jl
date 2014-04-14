@@ -60,7 +60,7 @@ end
 
 function show(io::IO, s::Stock)
     println(io, @sprintf("ticker:         %s", s.ticker))
-    println(io, @sprintf("cusip:          %s", s.cusip))
+#    println(io, @sprintf("cusip:          %s", s.cusip))
     println(io, @sprintf("currency:       %s", s.currency))
     println(io, @sprintf("tick:           %s", s.tick))
     println(io, @sprintf("multiplier:     %s", s.multiplier))

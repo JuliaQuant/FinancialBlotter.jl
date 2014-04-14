@@ -1,13 +1,15 @@
 import Base: show, getindex, length
 
-
 type FinancialTimeSeries{T<:Float64,N} <: AbstractTimeSeries
+#type FinancialTimeSeries <: AbstractTimeSeries
 
     timestamp::Vector{Date{ISOCalendar}}
+    #values::Matrix{Float64}
     values::Array{T,N}
     colnames::Vector{ASCIIString}
     instrument::AbstractInstrument
 
+#    function FinancialTimeSeries(timestamp::Vector{Date{ISOCalendar}}, values::Matrix{Float64}, colnames::Vector{ASCIIString}, instrument::AbstractInstrument)
     function FinancialTimeSeries(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString}, instrument::AbstractInstrument)
         nrow, ncol = size(values, 1), size(values, 2)
         nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
@@ -20,9 +22,13 @@ type FinancialTimeSeries{T<:Float64,N} <: AbstractTimeSeries
     end
 end
 
-FinancialTimeSeries{T,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}, t::AbstractInstrument) = FinancialTimeSeries{T,N}(d,v,c,t)
-FinancialTimeSeries{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1}, t::AbstractInstrument) = FinancialTimeSeries([d],v,c,t)
+#FinancialTimeSeries(d::Vector{Date{ISOCalendar}}, v::Vector{Float64}, c::Vector{ASCIIString}, t::AbstractInstrument) = FinancialTimeSeries(d,v,c,t)
+##### FinancialTimeSeries(d::Vector{Date{ISOCalendar}}, v::Matrix{Float64}, c::Vector{ASCIIString}, t::AbstractInstrument) = FinancialTimeSeries(d,v,c,t)
+#FinancialTimeSeries(d::Date{ISOCalendar}, v::Vector{Float64}, c::Vector{ASCIIString}, t::AbstractInstrument) = FinancialTimeSeries([d],v,c,t)
+###### FinancialTimeSeries(d::Date{ISOCalendar}, v::Matrix{Float64}, c::Vector{ASCIIString}, t::AbstractInstrument) = FinancialTimeSeries([d],v,c,t)
 
+FinancialTimeSeries{T<:Float64,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}, t::AbstractInstrument) = FinancialTimeSeries{T,N}(d,v,c,t)
+FinancialTimeSeries{T<:Float64,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1}, t::AbstractInstrument) = FinancialTimeSeries([d],v,c,t)
 ###### show #####################
  
 function show(io::IO, ft::FinancialTimeSeries)
@@ -94,29 +100,29 @@ end
 
 # single row
 function getindex(ft::FinancialTimeSeries, n::Int)
-    FinancialTimeSeries(ft.timestamp[n], ft.values[n,:], ft.colnames)
+    FinancialTimeSeries(ft.timestamp[n], ft.values[n,:], ft.colnames, ft.instrument)
 end
 
 # range of rows
 function getindex(ft::FinancialTimeSeries, r::Range1{Int})
-    FinancialTimeSeries(ft.timestamp[r], ft.values[r,:], ft.colnames)
+    FinancialTimeSeries(ft.timestamp[r], ft.values[r,:], ft.colnames, ft.instrument)
 end
 
 # array of rows
 function getindex(ft::FinancialTimeSeries, a::Array{Int})
-    FinancialTimeSeries(ft.timestamp[a], ft.values[a,:], ft.colnames)
+    FinancialTimeSeries(ft.timestamp[a], ft.values[a,:], ft.colnames, ft.instrument)
 end
 
 # single column fty name 
 function getindex(ft::FinancialTimeSeries, s::ASCIIString)
     n = findfirst(ft.colnames, s)
-    FinancialTimeSeries(ft.timestamp, ft.values[:, n], ASCIIString[s])
+    FinancialTimeSeries(ft.timestamp, ft.values[:, n], ASCIIString[s], ft.instrument)
 end
 
 # array of columns fty name
 function getindex(ft::FinancialTimeSeries, args::ASCIIString...)
     ns = [findfirst(ft.colnames, a) for a in args]
-    FinancialTimeSeries(ft.timestamp, ft.values[:,ns], ASCIIString[a for a in args])
+    FinancialTimeSeries(ft.timestamp, ft.values[:,ns], ASCIIString[a for a in args], ft.instrument)
 end
 
 # single date
