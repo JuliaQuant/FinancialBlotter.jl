@@ -9,7 +9,7 @@ import Base: length, show, getindex, fill!, add!
 export AbstractInstrument, AbstractCurrency, AbstractFinancialID,
        Stock, Currency, CurrencyPair,
        Ticker, CUSIP, BloombergID, ReutersID,
-       Blotter, OrderBook, FinancialTimeSeries, Trade, 
+       Blotter, OrderBook, FinancialTimeSeries, Trade, tradearray,
        USD, EUR, GBP, AUD, JPY, F, G, H, J, K, M, N, Q, U, V, X, Z,  
        orderbookcolnames, orderbookbidvalues, orderbookoffervalues, orderbooksellvalues, orderbookcovervalues, blottercolnames,
        add!, fill!,

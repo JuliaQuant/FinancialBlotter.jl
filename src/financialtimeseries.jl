@@ -29,6 +29,13 @@ end
 
 FinancialTimeSeries{T<:Float64,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}, t::AbstractInstrument) = FinancialTimeSeries{T,N}(d,v,c,t)
 FinancialTimeSeries{T<:Float64,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1}, t::AbstractInstrument) = FinancialTimeSeries([d],v,c,t)
+
+###### length ###################
+
+function length(f::FinancialTimeSeries)
+    length(f.timestamp)
+end
+
 ###### show #####################
  
 function show(io::IO, ft::FinancialTimeSeries)

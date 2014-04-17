@@ -37,8 +37,8 @@ OrderBook() = OrderBook([date(1980,1,3)], orderbookbidvalues, orderbookcolnames)
 
 ###### length ###################
 
-function length(b::OrderBook)
-    length(b.timestamp)
+function length(ob::OrderBook)
+    length(ob.timestamp)
 end
 
 ###### iterator protocol #########

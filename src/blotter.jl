@@ -67,9 +67,9 @@ end
 
 ###### length ###################
 
-# function length(b::Blotter)
-#     length(b.timestamp)
-# end
+function length(b::Blotter)
+    length(b.timestamp)
+end
 
 ###### show #####################
  
