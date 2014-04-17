@@ -101,7 +101,7 @@ function fill!(ob::OrderBook, timeseries::TimeArray{Float64,2}; slippage = .00)
                 ob.values[x,6]   = string(datetime(int(dal[1]),int(dal[2]),int(dal[3]),23,59,59,59))
                 break
             elseif float(ob.values[x,2])  > hi.values[w] - slippage # bid is above market
-                ob.values[x,2]   = string(high.values[w] - slippage)
+                ob.values[x,2]   = string(hi.values[w] - slippage)
                 ob.values[x,5]   = "closed"
                 dal              = split(string(lo[w].timestamp[1]), "-")
                 ob.values[x,6]   = string(datetime(int(dal[1]),int(dal[2]),int(dal[3]),23,59,59,59))
