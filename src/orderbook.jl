@@ -198,4 +198,3 @@ function merge(ob1::OrderBook, ob2::OrderBook)
     end
     OrderBook(dt, vals, orderbookcolnames)
 end
-

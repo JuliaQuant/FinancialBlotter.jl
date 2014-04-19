@@ -3,6 +3,19 @@ function parsedatetime(dt::String)
     datetime(int(res[1]),int(res[2]),int(res[3]),int(res[4]),int(res[5]),int(res[6]),0,eval(parse(res[7])))
 end
 
+function makedatetime(a::Array{Int64,1})
+    datetime(a[1],a[2],a[3],a[4],a[5],a[6],a[7])
+end
+
+function datetolastsecond(datearray::Array{Date{ISOCalendar},1})
+    res = DateTime{ISOCalendar, UTC}[]
+    for d in 1:length(datearray)
+        dtarray = [int(split(string(datearray[d]),"-")),23,59,59,59]
+        push!(res, makedatetime(dtarray))
+    end
+    res
+end
+
 function discretesignal(ba::TimeArray{Bool,1})
 #function discretesignal(ms::MarketSignal)
     iba = float64(ba.values)

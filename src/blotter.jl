@@ -65,6 +65,35 @@ function Blotter(ob::OrderBook)
     Blotter(dstring, vals, blottercolnames)
 end
 
+function Blotter(signal::TimeArray{Bool,1}, fts::FinancialTimeSeries{Float64,2}; quantity = 100, price = "open", slippage = .1)
+
+    op, cl = fts["Open"], fts["Close"]
+    tt = lag(signal)              # 495 row of bools, the next day
+    t  = discretesignal(tt)  # 78 rows of first true and first false, as floats though
+
+    price == "open" ?
+    fills = op[t.timestamp] :
+    price == "close" ?
+    fills = cl[t.timestamp] :
+    error("only open and close prices supported for naive backtests")
+
+    notsigned  = TimeArray(t.timestamp, quantity * ones(length(t)), ["Qty"])
+    exitdates  = findwhen(t.==0)
+    qty        = quantity * ones(length(t.timestamp))
+
+    for i in 1:length(notsigned)
+        for j in 1:length(exitdates)
+            if notsigned[i].timestamp[1] == exitdates[j]
+                qty[i] = qty[i] * -1
+            end
+        end
+    end
+
+   datetimes = datetolastsecond(t.timestamp)
+
+   Blotter(datetimes, [qty fills.values], blottercolnames)
+end
+
 ###### length ###################
 
 function length(b::Blotter)
@@ -72,7 +101,6 @@ function length(b::Blotter)
 end
 
 ###### show #####################
- 
 
 function show(io::IO, ta::Blotter)
   # variables 

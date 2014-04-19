@@ -8,7 +8,7 @@ add!(ob::OrderBook, entry::OrderBook) = OrderBook(vcat(ob.timestamp, entry.times
 # fill order book from a signal -- simple long/sell scenario
 
 #function fill!(s::TimeArray{Bool,1}, timeseries::TimeArray{Float64,2})
-function fill!(s::TimeArray{Bool,1}, timeseries::FinancialTimeSeries{Float64,2})
+function fillorderbook(s::TimeArray{Bool,1}, timeseries::FinancialTimeSeries{Float64,2})
 
     op, hi, lo, cl = timeseries["Open"], timeseries["High"], timeseries["Low"], timeseries["Close"]
 
@@ -20,7 +20,8 @@ function fill!(s::TimeArray{Bool,1}, timeseries::FinancialTimeSeries{Float64,2})
     entries    = OrderBook(entrydates, repmat(orderbookbidvalues, length(entrydates)), orderbookcolnames)
     bidsignal  = findwhen(discretesignal(s).==1)
     #entryprice = (lo[bidsignal] .+ (hi[bidsignal] .- lo[bidsignal])/2).values
-    entryprice = hi[bidsignal].values
+    #entryprice = hi[bidsignal].values
+    entryprice  = op[entrydates].values .+ .1  # slippage should NOT be here but in the fill algo below
     for i in 1:length(entries)
         entries.values[i,2] = string(round(entryprice[i],2))
     end
@@ -39,7 +40,10 @@ function fill!(s::TimeArray{Bool,1}, timeseries::FinancialTimeSeries{Float64,2})
 end
 
 #function fill!(ob::OrderBook, timeseries::TimeArray{Float64,2}; slippage = .00)
-function fill!(ob::OrderBook, timeseries::FinancialTimeSeries{Float64,2}; slippage = .00)
+#function fill!(ob::OrderBook, timeseries::FinancialTimeSeries{Float64,2}; slippage = .00)
+function fillblotter(ob::OrderBook, timeseries::FinancialTimeSeries{Float64,2}; slippage = .00, naive=false)
+    #naive ?
+    #code here :
 
     #for d in 1:length(ob) - 1
     for d in 1:2:length(ob)-1
