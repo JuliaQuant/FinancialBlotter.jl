@@ -7,7 +7,8 @@ add!(ob::OrderBook, entry::OrderBook) = OrderBook(vcat(ob.timestamp, entry.times
 
 # fill order book from a signal -- simple long/sell scenario
 
-function fill!(s::TimeArray{Bool,1}, timeseries::TimeArray{Float64,2})
+#function fill!(s::TimeArray{Bool,1}, timeseries::TimeArray{Float64,2})
+function fill!(s::TimeArray{Bool,1}, timeseries::FinancialTimeSeries{Float64,2})
 
     op, hi, lo, cl = timeseries["Open"], timeseries["High"], timeseries["Low"], timeseries["Close"]
 
@@ -37,7 +38,8 @@ function fill!(s::TimeArray{Bool,1}, timeseries::TimeArray{Float64,2})
     res
 end
 
-function fill!(ob::OrderBook, timeseries::TimeArray{Float64,2}; slippage = .00)
+#function fill!(ob::OrderBook, timeseries::TimeArray{Float64,2}; slippage = .00)
+function fill!(ob::OrderBook, timeseries::FinancialTimeSeries{Float64,2}; slippage = .00)
 
     #for d in 1:length(ob) - 1
     for d in 1:2:length(ob)-1
@@ -118,9 +120,4 @@ function fill!(ob::OrderBook, timeseries::TimeArray{Float64,2}; slippage = .00)
         end
     b = Blotter(ob) 
     b,ob
-end
-
-
-function fillbook()
-    produce("stamp blotter")
 end
