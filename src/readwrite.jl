@@ -1,7 +1,3 @@
-
-
-
-
 ### ##########################################################
 ### ####
 ### #### import time series from yahoo or FRED and return DataFrame

@@ -35,6 +35,8 @@ const orderbookcolnames    = ["Qty","Price","Side","Order", "Status", "Status Ti
 #OrderBook() = OrderBook([datetime(1980,1,3)], orderbookbidvalues, orderbookcolnames) 
 OrderBook() = OrderBook([date(1980,1,3)], orderbookbidvalues, orderbookcolnames) 
 
+add!(ob::OrderBook, entry::OrderBook) = OrderBook(vcat(ob.timestamp, entry.timestamp), vcat(ob.values, entry.values), orderbookcolnames)
+
 ###### length ###################
 
 function length(ob::OrderBook)
@@ -197,4 +199,40 @@ function merge(ob1::OrderBook, ob2::OrderBook)
         end
     end
     OrderBook(dt, vals, orderbookcolnames)
+end
+
+#### fill book/blotter ###### 
+
+# fill order book from a signal -- simple long/sell scenario
+
+#function fill!(s::TimeArray{Bool,1}, timeseries::TimeArray{Float64,2})
+function fillorderbook(s::TimeArray{Bool,1}, timeseries::FinancialTimeSeries{Float64,2})
+
+    op, hi, lo, cl = timeseries["Open"], timeseries["High"], timeseries["Low"], timeseries["Close"]
+
+    tt = lag(s)              # 495 row of bools, the next day
+    t  = discretesignal(tt)  # 78 rows of first true and first false, as floats though
+
+# entries day after signal, with a bid of signal day's mid price
+    entrydates = findwhen(t.==1)
+    entries    = OrderBook(entrydates, repmat(orderbookbidvalues, length(entrydates)), orderbookcolnames)
+    bidsignal  = findwhen(discretesignal(s).==1)
+    #entryprice = (lo[bidsignal] .+ (hi[bidsignal] .- lo[bidsignal])/2).values
+    #entryprice = hi[bidsignal].values
+    entryprice  = op[entrydates].values .+ .1  # slippage should NOT be here but in the fill algo below
+    for i in 1:length(entries)
+        entries.values[i,2] = string(round(entryprice[i],2))
+    end
+
+# exits day after signal, with .1 slippage
+    exitdates  = findwhen(t.==0)
+    exits      = OrderBook(exitdates, repmat(orderbooksellvalues, length(exitdates)), orderbookcolnames)
+    exitprice  = op[exitdates].values .+ .1  # slippage should NOT be here but in the fill algo below
+    for i in 1:length(exits)
+        exits.values[i,2] = string(round(exitprice[i],2))
+    end
+
+    res = merge(entries,exits)
+    res.values[1,5] = "open"
+    res
 end

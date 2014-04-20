@@ -4,7 +4,7 @@ module FinancialBlotter
 
 using TimeSeries, Datetime 
 
-import Base: length, show, getindex, fill!, add!
+import Base: length, show, getindex, add!
 
 export AbstractInstrument, AbstractCurrency, AbstractFinancialID,
        Stock, Currency, CurrencyPair,
@@ -14,7 +14,7 @@ export AbstractInstrument, AbstractCurrency, AbstractFinancialID,
        orderbookcolnames, orderbookbidvalues, orderbookoffervalues, orderbooksellvalues, orderbookcovervalues, blottercolnames,
        add!, fillorderbook, fillblotter,
        merge, parsedatetime, makedatetime, datetolastsecond, discretesignal
-#       start, next, done, emtpy
+       # start, next, done, emtpy
        # yahoo, fred
 
 include("instruments.jl")
@@ -22,8 +22,7 @@ include("financialtimeseries.jl")
 include("orderbook.jl")
 include("blotter.jl")
 include("utilities.jl")
-include("basemethods.jl")
-include("analysis.jl")
+include("trades.jl")
 #include("readwrite.jl")
 #include("plots.jl")
 
