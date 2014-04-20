@@ -1,22 +1,36 @@
 using MarketData
 
-facts("roughly") do
+facts("constructors") do
 
-  context("one") do
+  context("Ticker") do
       @fact 1 => roughly(1.0000000001) 
   end
 
-  context("one again") do
-    @fact 1.0000000000000001 => roughly(1)
+  context("CUSIP") do
+      @fact 1 => roughly(1.0000000001) 
   end
 
-end
+  context("BloombergID") do
+      @fact 1 => roughly(1.0000000001) 
+  end
 
-facts("errors register") do
+  context("ReutersID") do
+      @fact 1 => roughly(1.0000000001) 
+  end
 
-  context("errors") do
-    @fact_throws log(-1)
-    @fact_throws sum(foo, bar)
+  context("Currency") do
+      @fact 1 => roughly(1.0000000001) 
+  end
+
+  context("CurrencyPair") do
+      @fact 1 => roughly(1.0000000001) 
+  end
+
+  context("Stock default constructor") do
+      @fact 1 => roughly(1.0000000001) 
+  end
+
+  context("Stock from Ticker") do
+      @fact 1 => roughly(1.0000000001) 
   end
 end
-

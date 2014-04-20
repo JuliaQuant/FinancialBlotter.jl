@@ -1,9 +1,10 @@
 using FactCheck
 
-include("tatype.jl")
-include("split.jl") 
-include("apply.jl")
-include("combine.jl")
-include("readwrite.jl")
+include("instruments.jl")
+include("financialtimeseries.jl")
+include("orderbook.jl")
+include("blotter.jl")
+include("trades.jl")
+include("utilities.jl")
 
 exitstatus()

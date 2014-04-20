@@ -1,22 +1,28 @@
 using MarketData
 
-facts("roughly") do
+facts("constructors") do
 
-  context("one") do
+  context("inner constructor enforces constraints") do
       @fact 1 => roughly(1.0000000001) 
   end
 
-  context("one again") do
-    @fact 1.0000000000000001 => roughly(1)
+  context("from Blotter and FinancialTimeSeries") do
+      @fact 1 => roughly(1.0000000001) 
   end
-
 end
 
-facts("errors register") do
+facts("array of Trades") do
 
-  context("errors") do
+  context("closed trades") do
     @fact_throws log(-1)
-    @fact_throws sum(foo, bar)
+  end
+
+  context("opening trades") do
+    @fact_throws log(-1)
+  end
+
+  context("create an array of trades") do
+    @fact_throws log(-1)
   end
 end
 
