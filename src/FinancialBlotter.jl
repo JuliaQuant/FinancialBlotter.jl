@@ -12,8 +12,8 @@ export AbstractInstrument, AbstractCurrency, AbstractFinancialID,
        Blotter, OrderBook, FinancialTimeSeries, Trade, tradearray,
        Portfolio, TradeAccount,
        USD, EUR, GBP, AUD, JPY, F, G, H, J, K, M, N, Q, U, V, X, Z,  
-       orderbookcolnames, orderbookbidvalues, orderbookoffervalues, orderbooksellvalues, orderbookcovervalues,
-       blottercolnames,
+       orderbookcolnames, orderbookbidvalues, orderbookoffervalues, orderbooksellvalues, orderbookcovervalues, orderbookticker,
+       blottercolnames, blotterticker,
        add!, fillorderbook, fillblotter,
        merge, parsedatetime, makedatetime, datetolastsecond, discretesignal
        # start, next, done, emtpy

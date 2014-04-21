@@ -5,11 +5,12 @@ type Blotter <: AbstractTimeSeries
     timestamp::Vector{DateTime{ISOCalendar,UTC}}
     values::Matrix{Float64}
     colnames::Vector{ASCIIString}
-#    timeseries::Stock
+    ticker::Ticker
 
     function Blotter(timestamp::Vector{DateTime{ISOCalendar,UTC}}, 
                     values::Matrix{Float64},
-                    colnames::Vector{ASCIIString})
+                    colnames::Vector{ASCIIString},
+                    ticker::Ticker)
 
                     nrow, ncol = size(values, 1), size(values, 2)
                     nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
@@ -18,15 +19,16 @@ type Blotter <: AbstractTimeSeries
                     ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
                     flipud(timestamp) == sort(timestamp) ? 
                     new(flipud(timestamp), flipud(values), colnames):
-                    new(timestamp, values, colnames)
+                    new(timestamp, values, colnames, ticker)
     end
 end
 
 const blottercolnames = ["Qty", "Fill"]
+const blotterticker   = Ticker("ticker")
 
-Blotter() = Blotter([datetime(1795,10,31)], [0. 0], blottercolnames)
+Blotter() = Blotter([datetime(1795,10,31)], [0. 0], blottercolnames, blotterticker)
 
-add!(b::Blotter, entry::Blotter) = Blotter(vcat(b.timestamp, entry.timestamp), vcat(b.values, entry.values), blottercolnames)
+add!(b::Blotter, entry::Blotter) = Blotter(vcat(b.timestamp, entry.timestamp), vcat(b.values, entry.values), blottercolnames, blotterticker)
 
 function Blotter(ob::OrderBook) 
     counter = Int[]
@@ -45,7 +47,7 @@ function Blotter(ob::OrderBook)
         end
     end
 
-    Blotter(dstring, vals, blottercolnames)
+    Blotter(dstring, vals, blottercolnames, ob.ticker)
 end
 
 function Blotter(signal::TimeArray{Bool,1}, fts::FinancialTimeSeries{Float64,2}; quantity = 100, price = "open", slippage = .1)
@@ -74,7 +76,7 @@ function Blotter(signal::TimeArray{Bool,1}, fts::FinancialTimeSeries{Float64,2};
 
    datetimes = datetolastsecond(t.timestamp)
 
-   Blotter(datetimes, [qty fills.values], blottercolnames)
+   Blotter(datetimes, [qty fills.values], blottercolnames, fts.instrument.ticker)
 end
 
 function fillblotter(ob::OrderBook, timeseries::FinancialTimeSeries{Float64,2}; slippage = .00, naive=false)
@@ -231,23 +233,23 @@ end
 
 # single row
 function getindex(b::Blotter, n::Int)
-    Blotter(b.timestamp[n], b.values[n,:], b.colnames)
+    Blotter(b.timestamp[n], b.values[n,:], b.colnames, b.ticker)
 end
 
 # range of rows
 function getindex(b::Blotter, r::Range1{Int})
-    Blotter(b.timestamp[r], b.values[r,:], b.colnames)
+    Blotter(b.timestamp[r], b.values[r,:], b.colnames, b.ticker)
 end
 
 # array of rows
 function getindex(b::Blotter, a::Array{Int})
-    Blotter(b.timestamp[a], b.values[a,:], b.colnames)
+    Blotter(b.timestamp[a], b.values[a,:], b.colnames, b.ticker)
 end
 
 # single column by name 
 function getindex(b::Blotter, s::ASCIIString)
     n = findfirst(b.colnames, s)
-    Blotter(b.timestamp, b.values[:, n], ASCIIString[s])
+    Blotter(b.timestamp, b.values[:, n], ASCIIString[s], b.ticker)
 end
 
 # single date

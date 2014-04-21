@@ -5,11 +5,12 @@ type OrderBook <: AbstractTimeSeries
     timestamp::Vector{DateTime{ISOCalendar,UTC}}
     values::Matrix{ASCIIString}
     colnames::Vector{ASCIIString}
-#    timeseries::Stock
+    ticker::Ticker
 
     function OrderBook(timestamp::Vector{DateTime{ISOCalendar,UTC}}, 
                        values::Matrix{ASCIIString}, 
-                       colnames::Vector{ASCIIString})
+                       colnames::Vector{ASCIIString}, 
+                       ticker::Ticker)
 
                        nrow, ncol = size(values, 1), size(values, 2)
                        nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
@@ -27,48 +28,61 @@ const orderbookoffervalues = ["100" "123.12" "bid" "limit" "pending" "" "2.33"]
 const orderbooksellvalues  = ["100" "123.12" "sell" "market" "pending" "" "2.33"]
 const orderbookcovervalues = ["100" "123.12" "sell" "market" "pending" "" "2.33"]
 const orderbookcolnames    = ["Qty","Price","Side","Order", "Status", "Status Time", "Fees"]
+const orderbookticker      = Ticker("ticker")
 
-OrderBook(t::DateTime{ISOCalendar,UTC}, v::Matrix{ASCIIString}, c::Vector{ASCIIString}) = OrderBook([t], v, c)
-OrderBook() = OrderBook([date(1980,1,3)], orderbookbidvalues, orderbookcolnames) 
+OrderBook(t::DateTime{ISOCalendar,UTC}, v::Matrix{ASCIIString}, c::Vector{ASCIIString}, tick::Ticker) = OrderBook([t], v, c, tick)
+OrderBook() = OrderBook([date(1980,1,3)], orderbookbidvalues, orderbookcolnames, orderbookticker) 
 
-add!(ob::OrderBook, entry::OrderBook) = OrderBook(vcat(ob.timestamp, entry.timestamp), vcat(ob.values, entry.values), orderbookcolnames)
+function add!(ob::OrderBook, entry::OrderBook) 
+    ob.ticker !== entry.ticker ?
+    error("ticker values don't match") :
+    OrderBook(vcat(ob.timestamp, entry.timestamp), vcat(ob.values, entry.values), orderbookcolnames, ob.ticker)
+end
 
 # merge
 function merge(ob1::OrderBook, ob2::OrderBook)
-    dt = sort(vcat(ob1.timestamp, ob2.timestamp))
-    vals = fill("",length(dt),length(orderbookcolnames))
-    for d in 1:length(dt)
-        if ob1[dt[d]] != nothing
-            vals[d,:] = ob1[dt[d]].values
-        elseif ob2[dt[d]] != nothing
-            vals[d,:] = ob2[dt[d]].values
+    if ob1.ticker !== ob2.ticker 
+        error("ticker values don't match") 
+    else
+        dt = sort(vcat(ob1.timestamp, ob2.timestamp))
+        vals = fill("",length(dt),length(orderbookcolnames))
+        for d in 1:length(dt)
+            if ob1[dt[d]] != nothing
+                vals[d,:] = ob1[dt[d]].values
+            elseif ob2[dt[d]] != nothing
+                vals[d,:] = ob2[dt[d]].values
+            end
         end
     end
     OrderBook(dt, vals, orderbookcolnames)
 end
 
 function fillorderbook(s::TimeArray{Bool,1}, timeseries::FinancialTimeSeries{Float64,2})
+    if ob1.ticker !== ob2.ticker 
+        error("ticker values don't match") 
+    else
 
-    op, hi, lo, cl = timeseries["Open"], timeseries["High"], timeseries["Low"], timeseries["Close"]
+        op, hi, lo, cl = timeseries["Open"], timeseries["High"], timeseries["Low"], timeseries["Close"]
 
-    tt = lag(s)              # 495 row of bools, the next day
-    t  = discretesignal(tt)  # 78 rows of first true and first false, as floats though
+        tt = lag(s)              # 495 row of bools, the next day
+        t  = discretesignal(tt)  # 78 rows of first true and first false, as floats though
 
-# entries day after signal, with a bid of signal day's mid price
-    entrydates = findwhen(t.==1)
-    entries    = OrderBook(entrydates, repmat(orderbookbidvalues, length(entrydates)), orderbookcolnames)
-    bidsignal  = findwhen(discretesignal(s).==1)
-    entryprice  = op[entrydates].values .+ .1  # slippage should NOT be here but in the fill algo below
-    for i in 1:length(entries)
-        entries.values[i,2] = string(round(entryprice[i],2))
-    end
+        # entries day after signal, with a bid of signal day's mid price
+        entrydates = findwhen(t.==1)
+        entries    = OrderBook(entrydates, repmat(orderbookbidvalues, length(entrydates)), orderbookcolnames, timeseries.instrument.ticker)
+        bidsignal  = findwhen(discretesignal(s).==1)
+        entryprice  = op[entrydates].values .+ .1  # slippage should NOT be here but in the fill algo below
+        for i in 1:length(entries)
+            entries.values[i,2] = string(round(entryprice[i],2))
+        end
 
-# exits day after signal, with .1 slippage
-    exitdates  = findwhen(t.==0)
-    exits      = OrderBook(exitdates, repmat(orderbooksellvalues, length(exitdates)), orderbookcolnames)
-    exitprice  = op[exitdates].values .+ .1  # slippage should NOT be here but in the fill algo below
-    for i in 1:length(exits)
-        exits.values[i,2] = string(round(exitprice[i],2))
+        # exits day after signal, with .1 slippage
+        exitdates  = findwhen(t.==0)
+        exits      = OrderBook(exitdates, repmat(orderbooksellvalues, length(exitdates)), orderbookcolnames, timeseries.instrument..ticker)
+        exitprice  = op[exitdates].values .+ .1  # slippage should NOT be here but in the fill algo below
+        for i in 1:length(exits)
+            exits.values[i,2] = string(round(exitprice[i],2))
+        end
     end
 
     res = merge(entries,exits)
@@ -159,33 +173,33 @@ end
 
 # single row
 function getindex(b::OrderBook, n::Int)
-    OrderBook(b.timestamp[n], b.values[n,:], b.colnames)
+    OrderBook(b.timestamp[n], b.values[n,:], b.colnames, b.ticker)
 end
 
 # range of rows
 function getindex(b::OrderBook, r::Range1{Int})
-    OrderBook(b.timestamp[r], b.values[r,:], b.colnames)
+    OrderBook(b.timestamp[r], b.values[r,:], b.colnames, b.ticker)
 end
 
 # array of rows
 function getindex(b::OrderBook, a::Array{Int})
-    OrderBook(b.timestamp[a], b.values[a,:], b.colnames)
+    OrderBook(b.timestamp[a], b.values[a,:], b.colnames, b.ticker)
 end
 
 # single column by name 
 function getindex(b::OrderBook, s::ASCIIString)
     n = findfirst(b.colnames, s)
-    OrderBook(b.timestamp, b.values[:, n], ASCIIString[s])
+    OrderBook(b.timestamp, b.values[:, n], ASCIIString[s], b.ticker)
 end
 
 # array of columns by name
 function getindex(b::OrderBook, args::ASCIIString...)
     ns = [findfirst(b.colnames, a) for a in args]
-    OrderBook(b.timestamp, b.values[:,ns], ASCIIString[a for a in args])
+    OrderBook(b.timestamp, b.values[:,ns], ASCIIString[a for a in args], b.ticker)
 end
 
 # single date
-function getindex(b::OrderBook, d::Union(DateTime{ISOCalendar,UTC}))
+function getindex(b::OrderBook, d::DateTime{ISOCalendar,UTC})
    for i in 1:length(b)
      if [d] == b[i].timestamp 
        return b[i] 
