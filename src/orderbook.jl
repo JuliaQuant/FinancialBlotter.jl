@@ -1,6 +1,5 @@
 import Base: show, getindex, length
 
-#type OrderBook{T,N} <: AbstractTimeSeries
 type OrderBook <: AbstractTimeSeries
 
     #timestamp::Vector{DateTime{ISOCalendar,UTC}}
@@ -9,23 +8,24 @@ type OrderBook <: AbstractTimeSeries
     colnames::Vector{ASCIIString}
 #    timeseries::Stock
 
-    function OrderBook(timestamp::Vector{Date{ISOCalendar}}, values::Matrix{ASCIIString}, colnames::Vector{ASCIIString})
-#    function OrderBook(timestamp::Vector{DateTime{ISOCalendar,UTC}}, values::Matrix{ASCIIString}, colnames::Vector{ASCIIString})
-        nrow, ncol = size(values, 1), size(values, 2)
-        nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
-        ncol != size(colnames,1) ? error("column names must match width of array"):
-        timestamp != unique(timestamp) ? error("there are duplicate dates"):
-        ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
-        flipud(timestamp) == sort(timestamp) ? 
-        new(flipud(timestamp), flipud(values), colnames):
-        new(timestamp, values, colnames)
+    function OrderBook(timestamp::Vector{Date{ISOCalendar}}, 
+                       values::Matrix{ASCIIString}, 
+                       colnames::Vector{ASCIIString})
+
+                       nrow, ncol = size(values, 1), size(values, 2)
+                       nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
+                       ncol != size(colnames,1) ? error("column names must match width of array"):
+                       timestamp != unique(timestamp) ? error("there are duplicate dates"):
+                       ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
+                       flipud(timestamp) == sort(timestamp) ? 
+                       new(flipud(timestamp), flipud(values), colnames):
+                       new(timestamp, values, colnames)
     end
 end
 
 #OrderBook(t::Vector{DateTime{ISOCalendar,UTC}}, v::Matrix{ASCIIString}, c::Vector{ASCIIString}) = OrderBook(t,v,c)
 #OrderBook(t::DateTime{ISOCalendar,UTC}, v::Matrix{ASCIIString}, c::Vector{ASCIIString}) = OrderBook([t], v, c)
 OrderBook(t::Date{ISOCalendar}, v::Matrix{ASCIIString}, c::Vector{ASCIIString}) = OrderBook([t], v, c)
-
 
 const orderbookbidvalues   = ["100" "123.12" "bid" "limit" "pending" "" "2.33"]
 const orderbookoffervalues = ["100" "123.12" "bid" "limit" "pending" "" "2.33"]

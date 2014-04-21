@@ -1,45 +1,26 @@
 import Base: show, getindex, length
 
 type Blotter #<: AbstractTimeSeries
-#type Blotter{T<:Offsets} #<: AbstractTimeSeries
-#type Blotter{T,N} <: AbstractTimeSeries
 
-    #timestamp::Vector{Date{ISOCalendar}}
     timestamp::Vector{DateTime{ISOCalendar,UTC}}
-#    timestamp::Vector{DateTime{ISOCalendar,T}}
-    #values::Array{T,N}
     values::Matrix{Float64}
     colnames::Vector{ASCIIString}
 #    timeseries::Stock
 
-    #function Blotter(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
-    #function Blotter(timestamp::Vector{DateTime{ISOCalendar,UTC}}, values::Array{T,N}, colnames::Vector{ASCIIString})
-    #function Blotter(timestamp::Vector{DateTime{ISOCalendar,UTC}}, values::Matrix{Float64}, colnames::Vector{ASCIIString})
-    #function Blotter{T<:Offsets}(timestamp::Vector{DateTime{ISOCalendar,T}}, values::Matrix{Float64}, colnames::Vector{ASCIIString})
-    function Blotter(timestamp::Vector{DateTime{ISOCalendar,UTC}}, values::Matrix{Float64}, colnames::Vector{ASCIIString})
-        nrow, ncol = size(values, 1), size(values, 2)
-        nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
-        ncol != size(colnames,1) ? error("column names must match width of array"):
-        timestamp != unique(timestamp) ? error("there are duplicate dates"):
-        ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
-        flipud(timestamp) == sort(timestamp) ? 
-        new(flipud(timestamp), flipud(values), colnames):
-        new(timestamp, values, colnames)
+    function Blotter(timestamp::Vector{DateTime{ISOCalendar,UTC}}, 
+                    values::Matrix{Float64},
+                    colnames::Vector{ASCIIString})
+
+                    nrow, ncol = size(values, 1), size(values, 2)
+                    nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
+                    ncol != size(colnames,1) ? error("column names must match width of array"):
+                    timestamp != unique(timestamp) ? error("there are duplicate dates"):
+                    ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
+                    flipud(timestamp) == sort(timestamp) ? 
+                    new(flipud(timestamp), flipud(values), colnames):
+                    new(timestamp, values, colnames)
     end
 end
-
-# Blotter{T,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}) = Blotter{T,N}(d,v,c)
-# Blotter{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1}) = Blotter([d], v, c)
-# Blotter(d::Vector{Date{ISOCalendar}}) = Blotter(d,zeros(length(d),2),["Qty","Fill"])
-
-#Blotter{T,N}(d::Vector{DateTime{ISOCalendar,UTC}}, v::Array{T,N}, c::Vector{ASCIIString}) = Blotter{T,N}(d,v,c)
-# Blotter(d::Vector{DateTime{ISOCalendar,UTC}}, v::Matrix{Float64}, c::Vector{ASCIIString}) = Blotter(d,v,c)
-# Blotter(d::Vector{DateTime{ISOCalendar,UTC}}, v::Matrix{Float64}, c::Vector{ASCIIString}) = Blotter(d,v,c)
-# from single date
-#Blotter(d::DateTime{ISOCalendar,UTC}, v::Matrix{Float64}, c::Array{ASCIIString,1}) = Blotter([d], v, c)
-#Blotter{T}(d::Vector{DateTime{ISOCalendar,T}}, v::Matrix{Float64}, c::Vector{ASCIIString}) = Blotter(d,v,c)
-
-# Blotter(d::Vector{DateTime{ISOCalendar,UTC}}) = Blotter(d,zeros(length(d),2),["Qty","Fill"])
 
 const blottercolnames = ["Qty", "Fill"]
 
