@@ -26,7 +26,10 @@ type Portfolio
 end
 
 Portfolio{books::Vector{OrderBook}
-
+#    tstamps  combine arrays, unique and sort
+#    vals  are each blotter's log return (zero when NA) plus
+#          the equity and cah values
+#    colnames should be each blotter's ticker, + equity and cash
 
 
 
