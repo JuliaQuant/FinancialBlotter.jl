@@ -1,7 +1,7 @@
 
 import Base: show, getindex, length
 
-type Portfolio
+type Portfolio <: AbstractTimeSeries
     timestamp::Vector{DateTime{ISOCalendar,UTC}}
     values::Matrix{Float64}
     colnames::Vector{ASCIIString}
@@ -25,25 +25,11 @@ type Portfolio
     end
 end
 
-Portfolio{books::Vector{OrderBook}
+# Portfolio{books::Vector{OrderBook}
 #    tstamps  combine arrays, unique and sort
 #    vals  are each blotter's log return (zero when NA) plus
 #          the equity and cah values
 #    colnames should be each blotter's ticker, + equity and cash
-
-
-
-
-###### length ###################
-###### length ###################
-###### length ###################
-###### length ###################
-###### length ###################
-###### length ###################
-
-function length(b::Portfolio)
-    length(b.timestamp)
-end
 
 ###### show #####################
 
@@ -85,7 +71,6 @@ function show(io::IO, ta::Portfolio)
         for j in 1:ncol
             intcatcher[j] && ta.values[i,j] > 0?
             print_with_color(:green, io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
-#            print_with_color(:green, io, lpad(rpad(iround(ta.values[i,j]), colwidth[j] + 2, " "), " ")) :
             intcatcher[j] && ta.values[i,j] < 0 ?
             print_with_color(:red, io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
             print_with_color(:blue, io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
@@ -101,9 +86,6 @@ function show(io::IO, ta::Portfolio)
             intcatcher[j] && ta.values[i,j] < 0 ?
             print_with_color(:red, io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
             print_with_color(:blue, io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
-            # intcatcher[j] ?
-            # print(io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
-            # print(io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
         end
         println(io,"")
         end
@@ -150,7 +132,6 @@ function getindex(b::Portfolio, args::ASCIIString...)
 end
 
 # single date
-#function getindex(b::Portfolio, d::Date{ISOCalendar})
 function getindex(b::Portfolio, d::DateTime{ISOCalendar, UTC})
    for i in 1:length(b)
      if [d] == b[i].timestamp 
@@ -162,7 +143,6 @@ function getindex(b::Portfolio, d::DateTime{ISOCalendar, UTC})
  end
  
 # range of dates
-#function getindex(b::Portfolio, dates::Array{Date{ISOCalendar},1})
 function getindex(b::Portfolio, dates::Array{DateTime{ISOCalendar,UTC},1})
   counter = Int[]
 #  counter = int(zeros(length(dates)))
@@ -175,6 +155,7 @@ function getindex(b::Portfolio, dates::Array{DateTime{ISOCalendar,UTC},1})
   b[counter]
 end
 
+# DOESN'T WORK #########
 function getindex(b::Portfolio, r::DateRange{ISOCalendar}) 
     b[[r]]
 end

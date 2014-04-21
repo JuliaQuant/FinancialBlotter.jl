@@ -1,16 +1,13 @@
 import Base: show, getindex, length
 
 type FinancialTimeSeries{T<:Float64,N} <: AbstractTimeSeries
-#type FinancialTimeSeries <: AbstractTimeSeries
 
-    timestamp::Vector{Date{ISOCalendar}}
-    #values::Matrix{Float64}
+    timestamp::Vector{DateTime{ISOCalendar,UTC}}
     values::Array{T,N}
     colnames::Vector{ASCIIString}
     instrument::AbstractInstrument
 
-#    function FinancialTimeSeries(timestamp::Vector{Date{ISOCalendar}}, values::Matrix{Float64}, colnames::Vector{ASCIIString}, instrument::AbstractInstrument)
-    function FinancialTimeSeries(timestamp::Vector{Date{ISOCalendar}}, 
+    function FinancialTimeSeries(timestamp::Vector{DateTime{ISOCalendar,UTC}}, 
                                  values::Array{T,N},
                                  colnames::Vector{ASCIIString},
                                  instrument::AbstractInstrument)
@@ -26,21 +23,11 @@ type FinancialTimeSeries{T<:Float64,N} <: AbstractTimeSeries
     end
 end
 
-#FinancialTimeSeries(d::Vector{Date{ISOCalendar}}, v::Vector{Float64}, c::Vector{ASCIIString}, t::AbstractInstrument) = FinancialTimeSeries(d,v,c,t)
-##### FinancialTimeSeries(d::Vector{Date{ISOCalendar}}, v::Matrix{Float64}, c::Vector{ASCIIString}, t::AbstractInstrument) = FinancialTimeSeries(d,v,c,t)
-#FinancialTimeSeries(d::Date{ISOCalendar}, v::Vector{Float64}, c::Vector{ASCIIString}, t::AbstractInstrument) = FinancialTimeSeries([d],v,c,t)
-###### FinancialTimeSeries(d::Date{ISOCalendar}, v::Matrix{Float64}, c::Vector{ASCIIString}, t::AbstractInstrument) = FinancialTimeSeries([d],v,c,t)
-
-FinancialTimeSeries{T<:Float64,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}, t::AbstractInstrument) = FinancialTimeSeries{T,N}(d,v,c,t)
-FinancialTimeSeries{T<:Float64,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1}, t::AbstractInstrument) = FinancialTimeSeries([d],v,c,t)
-function FinancialTimeSeries{T<:Float64,N}(ta::TimeArray{T,N}, ticker::ASCIIString)
-     FinancialTimeSeries(ta.timestamp, ta.values, ta.colnames, Stock(Ticker(ticker)))
-end
-
-###### length ###################
-
-function length(f::FinancialTimeSeries)
-    length(f.timestamp)
+FinancialTimeSeries{T<:Float64,N}(d::Vector{DateTime{ISOCalendar,UTC}}, v::Array{T,N}, c::Vector{ASCIIString}, t::AbstractInstrument) = FinancialTimeSeries{T,N}(d,v,c,t)
+FinancialTimeSeries{T<:Float64,N}(d::DateTime{ISOCalendar,UTC}, v::Array{T,N}, c::Array{ASCIIString,1}, t::AbstractInstrument) = FinancialTimeSeries([d],v,c,t)
+function FinancialTimeSeries{T,N}(ta::TimeArray{T,N}, ticker::ASCIIString)
+     dates = datetolastsecond(ta.timestamp)
+     FinancialTimeSeries(dates, ta.values, ta.colnames, Stock(Ticker(ticker)))
 end
 
 ###### show #####################
@@ -140,7 +127,7 @@ function getindex(ft::FinancialTimeSeries, args::ASCIIString...)
 end
 
 # single date
-function getindex(ft::FinancialTimeSeries, d::Date{ISOCalendar})
+function getindex(ft::FinancialTimeSeries, d::DateTime{ISOCalendar,UTC})
    for i in 1:length(ft)
      if [d] == ft[i].timestamp 
        return ft[i] 
@@ -151,7 +138,7 @@ function getindex(ft::FinancialTimeSeries, d::Date{ISOCalendar})
  end
  
 # range of dates
-function getindex(ft::FinancialTimeSeries, dates::Array{Date{ISOCalendar},1})
+function getindex(ft::FinancialTimeSeries, dates::Array{DateTime{ISOCalendar,UTC},1})
   counter = Int[]
   for i in 1:length(dates)
     if findfirst(ft.timestamp, dates[i]) != 0
@@ -161,7 +148,9 @@ function getindex(ft::FinancialTimeSeries, dates::Array{Date{ISOCalendar},1})
   ft[counter]
 end
 
-function getindex(ft::FinancialTimeSeries, r::DateRange{ISOCalendar}) 
+#### DOESN"T WORK #########
+
+function getindex(ft::FinancialTimeSeries, r::DateTimeRange{ISOCalendar,UTC}) 
     ft[[r]]
 end
 

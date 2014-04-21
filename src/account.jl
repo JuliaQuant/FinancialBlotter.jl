@@ -1,6 +1,6 @@
 import Base: show, getindex, length
 
-type TradeAccount
+type TradeAccount <: AbstractTimeSeries
     timestamp::Vector{DateTime{ISOCalendar,UTC}}
     values::Matrix{Float64}
     colnames::Vector{ASCIIString}
@@ -20,17 +20,6 @@ type TradeAccount
                           new(flipud(timestamp), flipud(values), colnames):
                           new(timestamp, values, colnames)
     end
-end
-
-###### length ###################
-###### length ###################
-###### length ###################
-###### length ###################
-###### length ###################
-###### length ###################
-
-function length(b::TradeAccount)
-    length(b.timestamp)
 end
 
 ###### show #####################
@@ -73,7 +62,6 @@ function show(io::IO, ta::TradeAccount)
         for j in 1:ncol
             intcatcher[j] && ta.values[i,j] > 0?
             print_with_color(:green, io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
-#            print_with_color(:green, io, lpad(rpad(iround(ta.values[i,j]), colwidth[j] + 2, " "), " ")) :
             intcatcher[j] && ta.values[i,j] < 0 ?
             print_with_color(:red, io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
             print_with_color(:blue, io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
@@ -89,9 +77,6 @@ function show(io::IO, ta::TradeAccount)
             intcatcher[j] && ta.values[i,j] < 0 ?
             print_with_color(:red, io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
             print_with_color(:blue, io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
-            # intcatcher[j] ?
-            # print(io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
-            # print(io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
         end
         println(io,"")
         end
@@ -138,7 +123,6 @@ function getindex(b::TradeAccount, args::ASCIIString...)
 end
 
 # single date
-#function getindex(b::TradeAccount, d::Date{ISOCalendar})
 function getindex(b::TradeAccount, d::DateTime{ISOCalendar, UTC})
    for i in 1:length(b)
      if [d] == b[i].timestamp 
@@ -150,13 +134,10 @@ function getindex(b::TradeAccount, d::DateTime{ISOCalendar, UTC})
  end
  
 # range of dates
-#function getindex(b::TradeAccount, dates::Array{Date{ISOCalendar},1})
 function getindex(b::TradeAccount, dates::Array{DateTime{ISOCalendar,UTC},1})
   counter = Int[]
-#  counter = int(zeros(length(dates)))
   for i in 1:length(dates)
     if findfirst(b.timestamp, dates[i]) != 0
-      #counter[i] = findfirst(b.timestamp, dates[i])
       push!(counter, findfirst(b.timestamp, dates[i]))
     end
   end
@@ -169,4 +150,3 @@ end
 
 # day of week
 # getindex{T,N}(b::TradeAccount{T,N}, d::DAYOFWEEK) = b[dayofweek(b.timestamp) .== d]
-

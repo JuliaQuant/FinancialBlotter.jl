@@ -1,6 +1,6 @@
 import Base: show, getindex, length
 
-type Blotter #<: AbstractTimeSeries
+type Blotter <: AbstractTimeSeries
 
     timestamp::Vector{DateTime{ISOCalendar,UTC}}
     values::Matrix{Float64}
@@ -55,9 +55,9 @@ function Blotter(signal::TimeArray{Bool,1}, fts::FinancialTimeSeries{Float64,2};
     t  = discretesignal(tt)  # 78 rows of first true and first false, as floats though
 
     price == "open" ?
-    fills = op[t.timestamp] :
+    fills = op[datetolastsecond([t.timestamp])] :
     price == "close" ?
-    fills = cl[t.timestamp] :
+    fills = cl[datetolastsecond([t.timestamp])] :
     error("only open and close prices supported for naive backtests")
 
     notsigned  = TimeArray(t.timestamp, quantity * ones(length(t)), ["Qty"])
@@ -95,8 +95,6 @@ function fillblotter(ob::OrderBook, timeseries::FinancialTimeSeries{Float64,2}; 
         while v < length(timeseries[dt:nextdt])
             if  low.values[v] + slippage < float(ob.values[d,2]) < high.values[v] - slippage # bid is inside market, sell fits here too
                 ob.values[d,5]   = "closed"
-                #ob.values[d,6]   = string(datetime(low[v].timestamp[1]))
-                #ob.values[d+1,6] = string(datetime(ob[d+1].timestamp[1]))
                 da               = split(string(low[v].timestamp[1]), "-")
                 danext           = split(string(ob[d+1].timestamp[1]), "-")
                 ob.values[d,6]   = string(datetime(int(da[1]),int(da[2]),int(da[3]),23,59,59,59))
@@ -107,8 +105,6 @@ function fillblotter(ob::OrderBook, timeseries::FinancialTimeSeries{Float64,2}; 
             elseif float(ob.values[d,2])  > high.values[v] - slippage # bid is above market
                 ob.values[d,2]   = string(high.values[v] - slippage)
                 ob.values[d,5]   = "closed"
-                #ob.values[d,6]   = string(datetime(low[v].timestamp[1]))
-                #ob.values[d+1,6] = string(datetime(ob[d+1].timestamp[1]))
                 da               = split(string(low[v].timestamp[1]), "-")
                 danext           = split(string(ob[d+1].timestamp[1]), "-")
                 ob.values[d,6]   = string(datetime(int(da[1]),int(da[2]),int(da[3]),23,59,59,59))
@@ -135,7 +131,6 @@ function fillblotter(ob::OrderBook, timeseries::FinancialTimeSeries{Float64,2}; 
         lastwindow = ob.timestamp[x]:timeseries.timestamp[end]
         lo         = timeseries[lastwindow]["Low"]
         hi         = timeseries[lastwindow]["High"]
-        #while w <= length(timeseries[ob.timestamp[x]:timeseries.timestamp[end]])
         while w <= length(timeseries[lastwindow])
             if  lo.values[w] + slippage < float(ob.values[x,2]) < hi.values[w] - slippage # bid is inside market, sell fits here too
                 ob.values[x,5]   = "closed"
@@ -149,7 +144,6 @@ function fillblotter(ob::OrderBook, timeseries::FinancialTimeSeries{Float64,2}; 
                 ob.values[x,6]   = string(datetime(int(dal[1]),int(dal[2]),int(dal[3]),23,59,59,59))
                 break
             else  # bid is not filled
-                #if  v <  length(timeseries[dt:nextdt]) - 1
                 if  w < 6 
                     w += 1  
                 else
@@ -160,12 +154,6 @@ function fillblotter(ob::OrderBook, timeseries::FinancialTimeSeries{Float64,2}; 
         end
     b = Blotter(ob) 
     b,ob
-end
-
-###### length ###################
-
-function length(b::Blotter)
-    length(b.timestamp)
 end
 
 ###### show #####################
@@ -208,7 +196,6 @@ function show(io::IO, ta::Blotter)
         for j in 1:ncol
             intcatcher[j] && ta.values[i,j] > 0?
             print_with_color(:green, io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
-#            print_with_color(:green, io, lpad(rpad(iround(ta.values[i,j]), colwidth[j] + 2, " "), " ")) :
             intcatcher[j] && ta.values[i,j] < 0 ?
             print_with_color(:red, io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
             print_with_color(:blue, io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
@@ -224,9 +211,6 @@ function show(io::IO, ta::Blotter)
             intcatcher[j] && ta.values[i,j] < 0 ?
             print_with_color(:red, io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
             print_with_color(:blue, io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
-            # intcatcher[j] ?
-            # print(io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
-            # print(io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
         end
         println(io,"")
         end
@@ -266,15 +250,7 @@ function getindex(b::Blotter, s::ASCIIString)
     Blotter(b.timestamp, b.values[:, n], ASCIIString[s])
 end
 
-### # array of columns by name
-### not useful since there are only two rows!
-### function getindex(b::Blotter, args::ASCIIString...)
-###     ns = [findfirst(b.colnames, a) for a in args]
-###     Blotter(b.timestamp, b.values[:,ns], ASCIIString[a for a in args])
-### end
-
 # single date
-#function getindex(b::Blotter, d::Date{ISOCalendar})
 function getindex(b::Blotter, d::DateTime{ISOCalendar, UTC})
    for i in 1:length(b)
      if [d] == b[i].timestamp 
@@ -286,23 +262,20 @@ function getindex(b::Blotter, d::DateTime{ISOCalendar, UTC})
  end
  
 # range of dates
-#function getindex(b::Blotter, dates::Array{Date{ISOCalendar},1})
 function getindex(b::Blotter, dates::Array{DateTime{ISOCalendar,UTC},1})
   counter = Int[]
-#  counter = int(zeros(length(dates)))
   for i in 1:length(dates)
     if findfirst(b.timestamp, dates[i]) != 0
-      #counter[i] = findfirst(b.timestamp, dates[i])
       push!(counter, findfirst(b.timestamp, dates[i]))
     end
   end
   b[counter]
 end
 
-function getindex(b::Blotter, r::DateRange{ISOCalendar}) 
+## DOESN'T WORK because of DateTimeRange
+function getindex(b::Blotter, r::DateTimeRange{ISOCalendar,UTC}) 
     b[[r]]
 end
 
 # day of week
 # getindex{T,N}(b::Blotter{T,N}, d::DAYOFWEEK) = b[dayofweek(b.timestamp) .== d]
-
