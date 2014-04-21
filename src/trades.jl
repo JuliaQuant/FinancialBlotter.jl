@@ -5,7 +5,6 @@ immutable Trade
     close::Float64
     quantity::Int
     timeseries::FinancialTimeSeries
-    #function Trade(start::DateTime{ISOCalendar,UTC}, finish::DateTime{ISOCalendar,UTC}, open::Float64, close::Float64, quantity::Int, timeseries::FinancialTimeSeries)
     function Trade(start, 
                    finish,
                    open,
@@ -13,9 +12,13 @@ immutable Trade
                    quantity,
                    timeseries)
 
-                   timeseries.timestamp[1] > date(start) || timeseries.timestamp[end] < date(finish) ?
-                   error("timeseries doesn't match trade date range") :
-                   new(start, finish, open, close, quantity, timeseries[date(start):date(finish)])
+                   if timeseries.timestamp[1] > start || timeseries.timestamp[end] < finish 
+                       error("timeseries doesn't match trade date range") 
+                   else
+                       sd    = findfirst(timeseries.timestamp .== start)
+                       fd    = findfirst(timeseries.timestamp .== finish)
+                   end
+                   new(start, finish, open, close, quantity, timeseries[sd:fd])
     end
 end
 
@@ -67,9 +70,11 @@ function tradearray(b::Blotter, fts::FinancialTimeSeries)
     for d in 1:size(duration,1)
         s = duration[d,1]
         f = duration[d,2]
-        sdate = date(b.timestamp[s])
-        fdate = date(b.timestamp[f])
-        push!(trades, Trade(b[s:f], fts[sdate:fdate]))
+        sdate = b.timestamp[s]
+        sd    = findfirst(fts.timestamp .== sdate)
+        fdate = b.timestamp[f]
+        fd    = findfirst(fts.timestamp .== fdate)
+        push!(trades, Trade(b[s:f], fts[sd:fd]))
     end
     trades
 end

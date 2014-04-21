@@ -7,7 +7,8 @@ function makedatetime(a::Array{Int64,1})
     datetime(a[1],a[2],a[3],a[4],a[5],a[6],a[7])
 end
 
-function datetolastsecond(datearray::Array{Date{ISOCalendar},1})
+function datetolastsecond(datearray::Vector{Date{ISOCalendar}})
+#function datetolastsecond(datearray::Array{DateTime{ISOCalendar,UTC},1})
     res = DateTime{ISOCalendar, UTC}[]
     for d in 1:length(datearray)
         dtarray = [int(split(string(datearray[d]),"-")),23,59,59,59]
@@ -17,7 +18,6 @@ function datetolastsecond(datearray::Array{Date{ISOCalendar},1})
 end
 
 function discretesignal(ba::TimeArray{Bool,1})
-#function discretesignal(ms::MarketSignal)
     iba = float64(ba.values)
     idx = [1]
     for b in 2:length(ba)

@@ -2,13 +2,12 @@ import Base: show, getindex, length
 
 type OrderBook <: AbstractTimeSeries
 
-    #timestamp::Vector{DateTime{ISOCalendar,UTC}}
-    timestamp::Vector{Date{ISOCalendar}}
+    timestamp::Vector{DateTime{ISOCalendar,UTC}}
     values::Matrix{ASCIIString}
     colnames::Vector{ASCIIString}
 #    timeseries::Stock
 
-    function OrderBook(timestamp::Vector{Date{ISOCalendar}}, 
+    function OrderBook(timestamp::Vector{DateTime{ISOCalendar,UTC}}, 
                        values::Matrix{ASCIIString}, 
                        colnames::Vector{ASCIIString})
 
@@ -23,16 +22,13 @@ type OrderBook <: AbstractTimeSeries
     end
 end
 
-#OrderBook(t::Vector{DateTime{ISOCalendar,UTC}}, v::Matrix{ASCIIString}, c::Vector{ASCIIString}) = OrderBook(t,v,c)
-#OrderBook(t::DateTime{ISOCalendar,UTC}, v::Matrix{ASCIIString}, c::Vector{ASCIIString}) = OrderBook([t], v, c)
-OrderBook(t::Date{ISOCalendar}, v::Matrix{ASCIIString}, c::Vector{ASCIIString}) = OrderBook([t], v, c)
-
 const orderbookbidvalues   = ["100" "123.12" "bid" "limit" "pending" "" "2.33"]
 const orderbookoffervalues = ["100" "123.12" "bid" "limit" "pending" "" "2.33"]
 const orderbooksellvalues  = ["100" "123.12" "sell" "market" "pending" "" "2.33"]
 const orderbookcovervalues = ["100" "123.12" "sell" "market" "pending" "" "2.33"]
 const orderbookcolnames    = ["Qty","Price","Side","Order", "Status", "Status Time", "Fees"]
-#OrderBook() = OrderBook([datetime(1980,1,3)], orderbookbidvalues, orderbookcolnames) 
+
+OrderBook(t::DateTime{ISOCalendar,UTC}, v::Matrix{ASCIIString}, c::Vector{ASCIIString}) = OrderBook([t], v, c)
 OrderBook() = OrderBook([date(1980,1,3)], orderbookbidvalues, orderbookcolnames) 
 
 add!(ob::OrderBook, entry::OrderBook) = OrderBook(vcat(ob.timestamp, entry.timestamp), vcat(ob.values, entry.values), orderbookcolnames)
@@ -62,8 +58,6 @@ function fillorderbook(s::TimeArray{Bool,1}, timeseries::FinancialTimeSeries{Flo
     entrydates = findwhen(t.==1)
     entries    = OrderBook(entrydates, repmat(orderbookbidvalues, length(entrydates)), orderbookcolnames)
     bidsignal  = findwhen(discretesignal(s).==1)
-    #entryprice = (lo[bidsignal] .+ (hi[bidsignal] .- lo[bidsignal])/2).values
-    #entryprice = hi[bidsignal].values
     entryprice  = op[entrydates].values .+ .1  # slippage should NOT be here but in the fill algo below
     for i in 1:length(entries)
         entries.values[i,2] = string(round(entryprice[i],2))
@@ -80,12 +74,6 @@ function fillorderbook(s::TimeArray{Bool,1}, timeseries::FinancialTimeSeries{Flo
     res = merge(entries,exits)
     res.values[1,5] = "open"
     res
-end
-
-###### length ###################
-
-function length(ob::OrderBook)
-    length(ob.timestamp)
 end
 
 ###### iterator protocol #########
@@ -114,11 +102,9 @@ function show(io::IO, ta::OrderBook)
   println(io,"")
 
   # row label line
-#   print(io, ^(" ", spacetime), ta.colnames[1], ^(" ", colwidth[1] + 2 -firstcolwidth))
    print_with_color(:magenta, io, ^(" ", spacetime), ta.colnames[1], ^(" ", colwidth[1] + 2 -firstcolwidth))
 
    for p in 2:length(colwidth)
-     #print(io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(ta.colnames[p]) + 2))
      print_with_color(:magenta, io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(ta.colnames[p]) + 2))
    end
    println(io, "")
@@ -199,8 +185,7 @@ function getindex(b::OrderBook, args::ASCIIString...)
 end
 
 # single date
-#function getindex(b::OrderBook, d::Union(DateTime{ISOCalendar,UTC},Date{ISOCalendar}))
-function getindex(b::OrderBook, d::Union(Date{ISOCalendar}))
+function getindex(b::OrderBook, d::Union(DateTime{ISOCalendar,UTC}))
    for i in 1:length(b)
      if [d] == b[i].timestamp 
        return b[i] 
@@ -211,8 +196,7 @@ function getindex(b::OrderBook, d::Union(Date{ISOCalendar}))
  end
  
 # range of dates
-#function getindex(b::OrderBook, dates::Array{Union(DateTime{ISOCalendar,UTC},Date{ISOCalendar})})
-function getindex(b::OrderBook, dates::Array{Date{ISOCalendar}})
+function getindex(b::OrderBook, dates::Array{DateTime{ISOCalendar,UTC}})
   counter = Int[]
 #  counter = int(zeros(length(dates)))
   for i in 1:length(dates)
@@ -224,7 +208,7 @@ function getindex(b::OrderBook, dates::Array{Date{ISOCalendar}})
   b[counter]
 end
 
-function getindex(b::OrderBook, r::DateRange{ISOCalendar}) 
+function getindex(b::OrderBook, r::DateTimeRange{ISOCalendar}) 
     b[[r]]
 end
 
