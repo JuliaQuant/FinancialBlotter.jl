@@ -1,4 +1,3 @@
-
 import Base: show, getindex, length
 
 type Portfolio <: AbstractTimeSeries
@@ -21,15 +20,17 @@ type Portfolio <: AbstractTimeSeries
                        ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
                        flipud(timestamp) == sort(timestamp) ? 
                        new(flipud(timestamp), flipud(values), colnames):
-                       new(timestamp, values, colnames)
+                       new(timestamp, values, colnames, books, blotters)
     end
 end
 
-# Portfolio{books::Vector{OrderBook}
-#    tstamps  combine arrays, unique and sort
-#    vals  are each blotter's log return (zero when NA) plus
-#          the equity and cah values
-#    colnames should be each blotter's ticker, + equity and cash
+function Portfolio(books::Vector{OrderBook}, blotters::Vector{Blotter})
+    tstamps = sort(unique(vcat([b.timestamp for b in books], [bb.timestamp for bb in blotters])))
+#   vals  are each blotter's log return (zero when NA) plus
+#         the equity and cah values
+#   colnames should be each blotter's ticker, + equity and cash
+end
+
 
 ###### show #####################
 
