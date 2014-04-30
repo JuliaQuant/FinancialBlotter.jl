@@ -15,7 +15,9 @@ export AbstractInstrument, AbstractCurrency, AbstractFinancialID,
        orderbookcolnames, orderbookbidvalues, orderbookoffervalues, orderbooksellvalues, orderbookcovervalues, orderbookticker,
        blottercolnames, blotterticker,
        add!, fillorderbook, fillblotter,
-       merge, parsedatetime, makedatetime, datetolastsecond, discretesignal
+       merge, parsedatetime, makedatetime, datetolastsecond, discretesignal, 
+       # ∑matrix, Shapiro_Wilks
+       sigma, Shapiro_Wilks
        # start, next, done, emtpy
        # yahoo, fred
 
@@ -26,6 +28,7 @@ include("blotter.jl")
 include("trades.jl")
 include("portfolio.jl")
 include("account.jl")
+include("matrix.jl")
 include("utilities.jl")
 include("readwrite.jl")
 include("plots.jl")

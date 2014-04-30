@@ -12,8 +12,8 @@ t = Task(transact)
 
 function statemachine()
     j = 1
-    for k in 13:51
-        while j < 5
+      while j < 5
+        for k in 13:51
             if isprime(k)
                 consume(t)
                 println("")
