@@ -4,33 +4,36 @@ module FinancialBlotter
 
 using TimeSeries, Datetime 
 
-import Base: length, show, getindex, add!
+import Base: show, getindex, add!
 
 export AbstractInstrument, AbstractCurrency, AbstractFinancialID,
        Stock, Currency, CurrencyPair,
        Ticker, CUSIP, BloombergID, ReutersID,
-       Blotter, OrderBook, FinancialTimeSeries, Trade, tradearray,
+       Blotter, FinancialTimeSeries, 
        Portfolio, TradeAccount,
        USD, EUR, GBP, AUD, JPY, F, G, H, J, K, M, N, Q, U, V, X, Z,  
-       orderbookcolnames, orderbookbidvalues, orderbookoffervalues, orderbooksellvalues, orderbookcovervalues, orderbookticker,
        blottercolnames, blotterticker,
-       add!, fillorderbook, fillblotter,
-       merge, parsedatetime, makedatetime, datetolastsecond, discretesignal, 
-       # ∑matrix, Shapiro_Wilks
-       sigma, Shapiro_Wilks
-       # start, next, done, emtpy
+       add!, merge, parsedatetime, makedatetime, datetolastsecond, discretesignal 
        # yahoo, fred
+
+# Phase 2 methods
+#        OrderBook, Trade, tradearray,
+#        orderbookcolnames, orderbookbidvalues, orderbookoffervalues, orderbooksellvalues, orderbookcovervalues, orderbookticker,
+#        fillorderbook, fillblotter
 
 include("instruments.jl")
 include("financialtimeseries.jl")
-include("orderbook.jl")
 include("blotter.jl")
-include("trades.jl")
 include("portfolio.jl")
 include("account.jl")
-include("matrix.jl")
+include("show.jl")
+include("getindex.jl")
 include("utilities.jl")
 include("readwrite.jl")
-include("plots.jl")
+
+# include("Phase2/blotter1.jl")
+# include("Phase2/orderbook.jl")
+# include("Phase2/trades.jl")
+# include("Phase2/statemachine.jl")
 
 end 
