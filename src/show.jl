@@ -317,10 +317,14 @@ end
 ########################### Trade
 
 function show(io::IO, t::Trade)
-    print(io, @sprintf("%s:", string(t.start)))
-    print(io, @sprintf("%s", string(t.finish)))
-    println("")
-    print(io, @sprintf("%s ~ ", string(t.open)))
-    print(io, @sprintf("%s qty = ", string(t.close)))
-    print(io, @sprintf("%s", string(t.quantity)))
+    print_with_color(:blue, io, @sprintf("%s:", string(t.start)))
+    print_with_color(:blue, io, @sprintf("%s ", string(t.finish)))
+    print_with_color(:yellow, io, @sprintf("%s ~ ", string(t.open)))
+    print_with_color(:yellow, io, @sprintf("%s ", string(t.close)))
+    if t.side == "long" && t.close - t.open> 0
+        print_with_color(:green, io, @sprintf("qty = "))
+    else
+        print_with_color(:red, io, @sprintf("qty = "))
+    end
+    print_with_color(:blue, io, @sprintf("%s", string(t.quantity)))
 end

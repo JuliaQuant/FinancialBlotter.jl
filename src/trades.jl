@@ -3,14 +3,10 @@ immutable Trade
     finish::DateTime{ISOCalendar,UTC}
     open::Float64
     close::Float64
+    side::ASCIIString
     quantity::Int
     timeseries::FinancialTimeSeries
-    function Trade(start, 
-                   finish,
-                   open,
-                   close, 
-                   quantity,
-                   timeseries)
+    function Trade(start, finish, open, close, side, quantity, timeseries)
 
                    if timeseries.timestamp[1] > start || timeseries.timestamp[end] < finish 
                        error("timeseries doesn't match trade date range") 
@@ -18,12 +14,12 @@ immutable Trade
                        sd    = findfirst(timeseries.timestamp .== start)
                        fd    = findfirst(timeseries.timestamp .== finish)
                    end
-                   new(start, finish, open, close, quantity, timeseries[sd:fd])
+                   new(start, finish, open, close, side, quantity, timeseries[sd:fd])
     end
 end
 
 function Trade(b::Blotter, f::FinancialTimeSeries)
-    Trade(b.timestamp[1], b.timestamp[length(b.timestamp)], b.values[length(b.timestamp)+1], b.values[end], b.values[1], f)
+    Trade(b.timestamp[1], b.timestamp[length(b.timestamp)], b.values[length(b.timestamp)+1], b.values[end], "long", b.values[1], f)
 end
 
 

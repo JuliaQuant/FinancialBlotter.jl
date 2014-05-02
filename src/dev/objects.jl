@@ -12,5 +12,6 @@ pos  = pnls[pnls.>0]
 neg  = pnls[pnls.<0]
 profitfactor = sum(pos)/abs(sum(neg))
 mae = convert(Array{Float64}, ([t.open - minimum(t.timeseries["Low"].values) for t in trades]))
+trades
 
 ## make orderbook aware of account information, thus enforcing path dependence
