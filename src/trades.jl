@@ -26,16 +26,6 @@ function Trade(b::Blotter, f::FinancialTimeSeries)
     Trade(b.timestamp[1], b.timestamp[length(b.timestamp)], b.values[length(b.timestamp)+1], b.values[end], b.values[1], f)
 end
 
-########## show #############
-
-function show(io::IO, t::Trade)
-    print(io, @sprintf("%s:", string(t.start)))
-    print(io, @sprintf("%s", string(t.finish)))
-    println("")
-    print(io, @sprintf("%s ~ ", string(t.open)))
-    print(io, @sprintf("%s qty = ", string(t.close)))
-    print(io, @sprintf("%s", string(t.quantity)))
-end
 
 ########## get Trades #########
 

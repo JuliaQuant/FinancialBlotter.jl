@@ -314,3 +314,13 @@ function show(io::IO, c::CurrencyPair)
     print(io, @sprintf("%s/%s", string(c.baseside), string(c.quoteside)))
 end
 
+########################### Trade
+
+function show(io::IO, t::Trade)
+    print(io, @sprintf("%s:", string(t.start)))
+    print(io, @sprintf("%s", string(t.finish)))
+    println("")
+    print(io, @sprintf("%s ~ ", string(t.open)))
+    print(io, @sprintf("%s qty = ", string(t.close)))
+    print(io, @sprintf("%s", string(t.quantity)))
+end

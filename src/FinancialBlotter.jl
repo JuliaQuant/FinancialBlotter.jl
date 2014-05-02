@@ -10,20 +10,21 @@ export AbstractInstrument, AbstractCurrency, AbstractFinancialID,
        Stock, Currency, CurrencyPair,
        Ticker, CUSIP, BloombergID, ReutersID,
        Blotter, FinancialTimeSeries, 
-       Portfolio, TradeAccount,
+       Portfolio, TradeAccount, Trade, tradearray,
        USD, EUR, GBP, AUD, JPY, F, G, H, J, K, M, N, Q, U, V, X, Z,  
        blottercolnames, blotterticker,
        add!, merge, parsedatetime, makedatetime, datetolastsecond, discretesignal 
        # yahoo, fred
 
-# Phase 2 methods
-#        OrderBook, Trade, tradearray,
+# Phase 2 methods and const
+#        OrderBook, 
 #        orderbookcolnames, orderbookbidvalues, orderbookoffervalues, orderbooksellvalues, orderbookcovervalues, orderbookticker,
 #        fillorderbook, fillblotter
 
 include("instruments.jl")
 include("financialtimeseries.jl")
 include("blotter.jl")
+include("trades.jl")
 include("portfolio.jl")
 include("account.jl")
 include("show.jl")
