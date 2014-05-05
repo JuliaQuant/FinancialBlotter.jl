@@ -3,6 +3,11 @@ function parsedatetime(dt::String)
     datetime(int(res[1]),int(res[2]),int(res[3]),int(res[4]),int(res[5]),int(res[6]),0,eval(parse(res[7])))
 end
 
+function parsedatetime_from_TOS(dt::String)
+    res =  match(r"(\d{1,2})/(\d{1,2})/(\d{2})\s(\d{2}):(\d{2}):(\d{2})",dt).captures
+    datetime(2000+int(res[3]),int(res[1]),int(res[2]),int(res[4]),int(res[5]),int(res[6]))
+end
+
 function makedatetime(a::Array{Int64,1})
     datetime(a[1],a[2],a[3],a[4],a[5],a[6],a[7])
 end

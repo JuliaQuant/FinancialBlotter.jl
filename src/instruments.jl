@@ -46,7 +46,15 @@ const USD = Currency("USD")
 const GBP = Currency("GBP")
 const EUR = Currency("EUR")
 const AUD = Currency("AUD")
+const NZD = Currency("NZD")
 const JPY = Currency("JPY")
+
+const EURUSD = CurrencyPair(EUR,USD)
+const EURJPY = CurrencyPair(EUR,JPY)
+const AUDUSD = CurrencyPair(AUD,USD)
+const NZDUSD = CurrencyPair(NZD,USD)
+const GBPUSD = CurrencyPair(GBP,USD)
+const USDJPY = CurrencyPair(USD,JPY)
 
 const F = "Jan"
 const G = "Feb"

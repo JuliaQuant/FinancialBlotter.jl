@@ -11,9 +11,9 @@ export AbstractInstrument, AbstractCurrency, AbstractFinancialID,
        Ticker, CUSIP, BloombergID, ReutersID,
        Blotter, FinancialTimeSeries, 
        Portfolio, TradeAccount, Trade, tradearray,
-       USD, EUR, GBP, AUD, JPY, F, G, H, J, K, M, N, Q, U, V, X, Z,  
+       USD, EUR, GBP, AUD, JPY, EURUSD, EURJPY, USDGBP, USDAUD, USDNZD, USDJPY, F, G, H, J, K, M, N, Q, U, V, X, Z,  
        blottercolnames, blotterticker,
-       add!, merge, parsedatetime, makedatetime, datetolastsecond, discretesignal 
+       add!, merge, parsedatetime, parsedatetime_from_TOS, makedatetime, datetolastsecond, discretesignal 
        # yahoo, fred
 
 # Phase 2 methods and const
