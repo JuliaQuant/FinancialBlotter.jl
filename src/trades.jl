@@ -64,3 +64,38 @@ function tradearray(b::Blotter, fts::FinancialTimeSeries)
     end
     trades
 end
+
+function tradestats(t::Vector{Trade})
+#     symbol             = t.[1].timeseries.instrument.ticker
+#     txns_total         = length(trades)
+#     trades_total       = 
+#     pnls               = convert(Array{Float64}, ([(t.close-t.open) for t in trades].*100))
+#     pos                = pnls[pnls.>0]
+#     neg                = pnls[pnls.<0]
+#     netprofit          =
+#     trade_pl_mean      =
+#     med_Trade_PL       =
+#     largest_winner     = maximum(pos)
+#     largest_loser      = minimum(neg)
+#     std_Dev_Trade_PL   =
+#     percent_positive   = length(pos)/length(trades)
+#     percent_negative   = length(neg)/length(trades)
+#     profitfactor       = sum(pos)/abs(sum(neg))
+#     avg_Win_Trade      = mean(pos)
+#     med_Win_Trade      = median(pos)
+#     avg_Losing_Trade   = mean(neg)
+#     med_Losing_Trade   = median(neg)
+#     avg_Daily_PL       =
+#     med_Daily_PL       =
+#     std_Dev_Daily_PL   =
+#     ann_Sharpe         =
+#     max_drawdown       =
+#     profit_To_Max_Draw =
+#     avg_WinLoss_Ratio  =
+#     med_WinLoss_Ratio  =
+#     max_equity         =
+#     min_equity         =
+#     end_equity         =
+#     mae                = convert(Array{Float64}, ([t.open - minimum(t.timeseries["Low"].values) for t in trades]))
+end
+

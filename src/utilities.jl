@@ -3,6 +3,11 @@ function parsedatetime(dt::String)
     datetime(int(res[1]),int(res[2]),int(res[3]),int(res[4]),int(res[5]),int(res[6]),0,eval(parse(res[7])))
 end
 
+function parsedatetime1(dt::String)
+    res =  match(r"(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2}):(\d{2})",dt).captures
+    datetime(int(res[1]),int(res[2]),int(res[3]),int(res[4]),int(res[5]),int(res[6]),1)
+end
+
 function parsedatetime_from_TOS(dt::String)
     res =  match(r"(\d{1,2})/(\d{1,2})/(\d{2})\s(\d{2}):(\d{2}):(\d{2})",dt).captures
     datetime(2000+int(res[3]),int(res[1]),int(res[2]),int(res[4]),int(res[5]),int(res[6]))
