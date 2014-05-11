@@ -1,29 +1,20 @@
-using TimeSeries, Datetime
+using TimeSeries, Datetime, FinancialSeries
 
-module FinancialBlotter 
+module TradeBlotter 
 
-using TimeSeries, Datetime 
+using TimeSeries, Datetime, FinancialSeries 
 
 import Base: show, getindex, add!
 
-export AbstractInstrument, AbstractCurrency, AbstractFinancialID,
-       Stock, Currency, CurrencyPair,
-       Ticker, CUSIP, BloombergID, ReutersID,
-       Blotter, FinancialTimeSeries, TickData,
-       Portfolio, TradeAccount, Trade, tradearray,
-       USD, EUR, GBP, AUD, JPY, EURUSD, EURJPY, USDGBP, USDAUD, USDNZD, USDJPY, F, G, H, J, K, M, N, Q, U, V, X, Z,  
+export Blotter, Portfolio, Account, Trade, tradearray,
        blottercolnames, blotterticker,
        add!, merge, parsedatetime, parsedatetime1, parsedatetime_from_TOS, makedatetime, datetolastsecond, discretesignal 
-       # yahoo, fred
 
 # Phase 2 methods and const
 #        OrderBook, 
 #        orderbookcolnames, orderbookbidvalues, orderbookoffervalues, orderbooksellvalues, orderbookcovervalues, orderbookticker,
 #        fillorderbook, fillblotter
 
-include("instruments.jl")
-include("financialtimeseries.jl")
-include("tickdata.jl")
 include("blotter.jl")
 include("trades.jl")
 include("portfolio.jl")

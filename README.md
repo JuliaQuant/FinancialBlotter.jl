@@ -1,16 +1,14 @@
-[![Build Status](https://travis-ci.org/JuliaQuant/FinancialBlotter.jl.png)](https://travis-ci.org/JuliaQuant/FinancialBlotter.jl)
+[![Build Status](https://travis-ci.org/JuliaQuant/TradeBlotter.jl.png)](https://travis-ci.org/JuliaQuant/TradeBlotter.jl)
 
-Inspired by R's `blotter`, `FinancialInstrument` and `quantstrat` packages.
+Inspired by R's `blotter` and `quantstrat` packages.
 
 ````julia
-julia> Pkg.clone("https://github.com/JuliaQuant/FinancialBlotter.jl.git")
+julia> Pkg.clone("https://github.com/JuliaQuant/TradeBlotter.jl.git")
 ````
 
 ## First phase
 
-Financial and trade accounting framework in Julia that includes:
-  * instrument types (`Stock`, `CurrencyPair`, etc)
-  * `FinancialTimeSeries` type that holds time series data and instrument metadata
+Portfolio and trade accounting framework in Julia that includes:
   * `Blotter` object that keeps track of filled transactions
 
 ## Second phase

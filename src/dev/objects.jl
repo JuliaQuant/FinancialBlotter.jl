@@ -1,11 +1,12 @@
-using TradeModels, MarketData, FinancialBlotter
+using TradeModels, MarketData, TradeBlotter
 
-signal = (sma(Cl,50) .> sma(Cl,200));
+signal = (sma(AAPL["Close"],50) .> sma(AAPL["Close"],200));
+#signal = (sma(Cl,50) .> sma(Cl,200));
 #signal = Cl .> sma(Cl,200);
-spx    = FinancialTimeSeries(OHLC, "SPX")
-golden = Blotter(signal, spx)
+aapl    = FinancialTimeSeries(AAPL, "AAPL")
+golden = Blotter(signal, aapl)
 
-trades = tradearray(golden, spx)
+trades = tradearray(golden, aapl["Close"])
 
 pnls = convert(Array{Float64}, ([(t.close-t.open) for t in trades].*100))
 pos  = pnls[pnls.>0]

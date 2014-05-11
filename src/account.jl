@@ -1,13 +1,13 @@
-type TradeAccount <: AbstractTimeSeries
+type Account <: AbstractTimeSeries
     timestamp::Vector{DateTime{ISOCalendar,UTC}}
     values::Matrix{Float64}
     colnames::Vector{ASCIIString}
     portfolios::Vector{Portfolio} 
 
-    function TradeAccount(timestamp::Vector{DateTime{ISOCalendar,UTC}}, 
+    function Account(timestamp::Vector{DateTime{ISOCalendar,UTC}}, 
                           values::Matrix{Float64}, 
                           colnames::Vector{ASCIIString},
-                          portfolios::Vector{TradeAccount})
+                          portfolios::Vector{Account})
     
                           nrow, ncol = size(values, 1), size(values, 2)
                           nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
@@ -19,4 +19,3 @@ type TradeAccount <: AbstractTimeSeries
                           new(timestamp, values, colnames)
     end
 end
-
