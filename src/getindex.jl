@@ -50,7 +50,7 @@ function getindex(b::Union(Blotter,Account,Portfolio), args::ASCIIString...)
 end
 
 # single date
-function getindex(b::Union(Blotter,Account,Portfolio), d::Date{ISOCalendar, UTC})
+function getindex(b::Union(Blotter,Account,Portfolio), d::Date)
    for i in 1:length(b)
      if [d] == b[i].timestamp 
        return b[i] 
@@ -61,7 +61,7 @@ function getindex(b::Union(Blotter,Account,Portfolio), d::Date{ISOCalendar, UTC}
  end
  
 # range of dates
-function getindex(b::Union(Blotter,Account,Portfolio), dates::Array{Date{ISOCalendar,UTC},1})
+function getindex(b::Union(Blotter,Account,Portfolio), dates::Array{Date,1})
   counter = Int[]
   for i in 1:length(dates)
     if findfirst(b.timestamp, dates[i]) != 0
@@ -71,7 +71,7 @@ function getindex(b::Union(Blotter,Account,Portfolio), dates::Array{Date{ISOCale
   b[counter]
 end
 
-function getindex(b::Union(Blotter,Account,Portfolio), r::DateRange) 
+function getindex(b::Union(Blotter,Account,Portfolio), r::StepRange) 
     b[[r]]
 end
 
@@ -108,7 +108,7 @@ end
 # end
 # 
 # # single date
-# function getindex(b::Account, d::Date{ISOCalendar, UTC})
+# function getindex(b::Account, d::Date)
 #    for i in 1:length(b)
 #      if [d] == b[i].timestamp 
 #        return b[i] 
@@ -119,7 +119,7 @@ end
 #  end
 #  
 # # range of dates
-# function getindex(b::Account, dates::Array{Date{ISOCalendar,UTC},1})
+# function getindex(b::Account, dates::Array{Date,1})
 #   counter = Int[]
 #   for i in 1:length(dates)
 #     if findfirst(b.timestamp, dates[i]) != 0
@@ -129,7 +129,7 @@ end
 #   b[counter]
 # end
 # 
-# function getindex(b::Account, r::DateRange) 
+# function getindex(b::Account, r::StepRange) 
 #     b[[r]]
 # end
 # 
@@ -160,7 +160,7 @@ end
 # end
 # 
 # # single date
-# function getindex(b::Blotter, d::Date{ISOCalendar, UTC})
+# function getindex(b::Blotter, d::Date)
 #    for i in 1:length(b)
 #      if [d] == b[i].timestamp 
 #        return b[i] 
@@ -171,7 +171,7 @@ end
 #  end
 #  
 # # range of dates
-# function getindex(b::Blotter, dates::Array{Date{ISOCalendar,UTC},1})
+# function getindex(b::Blotter, dates::Array{Date,1})
 #   counter = Int[]
 #   for i in 1:length(dates)
 #     if findfirst(b.timestamp, dates[i]) != 0
@@ -181,8 +181,8 @@ end
 #   b[counter]
 # end
 # 
-# ## DOESN'T WORK because of DateRange
-# function getindex(b::Blotter, r::DateRange{ISOCalendar,UTC}) 
+# ## DOESN'T WORK because of StepRange
+# function getindex(b::Blotter, r::StepRange) 
 #     b[[r]]
 # end
 # 
@@ -219,7 +219,7 @@ end
 # end
 # 
 # # single date
-# function getindex(b::Portfolio, d::Date{ISOCalendar, UTC})
+# function getindex(b::Portfolio, d::Date)
 #    for i in 1:length(b)
 #      if [d] == b[i].timestamp 
 #        return b[i] 
@@ -230,7 +230,7 @@ end
 #  end
 #  
 # # range of dates
-# function getindex(b::Portfolio, dates::Array{Date{ISOCalendar,UTC},1})
+# function getindex(b::Portfolio, dates::Array{Date,1})
 #   counter = Int[]
 # #  counter = int(zeros(length(dates)))
 #   for i in 1:length(dates)
@@ -243,7 +243,7 @@ end
 # end
 # 
 # # DOESN'T WORK #########
-# function getindex(b::Portfolio, r::DateRange) 
+# function getindex(b::Portfolio, r::StepRange) 
 #     b[[r]]
 # end
 # 

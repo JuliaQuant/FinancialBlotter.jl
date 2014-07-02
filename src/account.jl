@@ -1,10 +1,10 @@
 type Account <: AbstractTimeSeries
-    timestamp::Vector{Date{ISOCalendar,UTC}}
+    timestamp::Vector{Date}
     values::Matrix{Float64}
     colnames::Vector{ASCIIString}
     portfolios::Vector{Portfolio} 
 
-    function Account(timestamp::Vector{Date{ISOCalendar,UTC}}, 
+    function Account(timestamp::Vector{Date}, 
                           values::Matrix{Float64}, 
                           colnames::Vector{ASCIIString},
                           portfolios::Vector{Account})

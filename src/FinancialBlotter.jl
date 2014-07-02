@@ -16,12 +16,12 @@ export Blotter, Portfolio, Account, Trade, tradearray,
 #        orderbookcolnames, orderbookbidvalues, orderbookoffervalues, orderbooksellvalues, orderbookcovervalues, orderbookticker,
 #        fillorderbook, fillblotter
 
-# include("blotter.jl")
-# include("trades.jl")
-# include("portfolio.jl")
-# include("account.jl")
-# include("show.jl")
-# include("getindex.jl")
+include("blotter.jl")
+include("trades.jl")
+include("portfolio.jl")
+include("account.jl")
+include("show.jl")
+include("getindex.jl")
 # include("utilities.jl")
 # include("readwrite.jl")
 

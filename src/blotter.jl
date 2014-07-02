@@ -1,11 +1,11 @@
 type Blotter <: AbstractTimeSeries
 
-    timestamp::Vector{Date{ISOCalendar,UTC}}
+    timestamp::Vector{Date}
     values::Matrix{Float64}
     colnames::Vector{ASCIIString}
     ticker::Ticker
 
-    function Blotter(timestamp::Vector{Date{ISOCalendar,UTC}}, 
+    function Blotter(timestamp::Vector{Date}, 
                     values::Matrix{Float64},
                     colnames::Vector{ASCIIString},
                     ticker::Ticker)

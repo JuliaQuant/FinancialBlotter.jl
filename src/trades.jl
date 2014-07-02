@@ -1,6 +1,6 @@
 immutable Trade
-    start::DateTime{ISOCalendar,UTC}
-    finish::DateTime{ISOCalendar,UTC}
+    start::DateTime
+    finish::DateTime
     open::Float64
     close::Float64
     side::ASCIIString
@@ -98,4 +98,3 @@ function tradestats(t::Vector{Trade})
 #     end_equity         =
 #     mae                = convert(Array{Float64}, ([t.open - minimum(t.timeseries["Low"].values) for t in trades]))
 end
-

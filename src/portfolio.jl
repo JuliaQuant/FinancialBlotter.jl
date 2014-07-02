@@ -1,11 +1,11 @@
 type Portfolio <: AbstractTimeSeries
-    timestamp::Vector{Date{ISOCalendar,UTC}}
+    timestamp::Vector{Date}
     values::Matrix{Float64}
     colnames::Vector{ASCIIString}
 #    books::Vector{OrderBook}
     blotters::Vector{Portfolio}
 
-    function Portfolio(timestamp::Vector{Date{ISOCalendar,UTC}}, 
+    function Portfolio(timestamp::Vector{Date}, 
                        values::Matrix{Float64}, 
                        colnames::Vector{ASCIIString},
 #                       books::Vector{OrderBook},
