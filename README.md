@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/JuliaQuant/TradeBlotter.jl.png)](https://travis-ci.org/JuliaQuant/TradeBlotter.jl)
+[![Build Status](https://travis-ci.org/JuliaQuant/FinancialBlotter.jl.svg?branch=master)](https://travis-ci.org/JuliaQuant/FinancialBlotter.jl)
 
 Inspired by R's `blotter` and `quantstrat` packages.
 
